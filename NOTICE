@@ -1,0 +1,31 @@
+P5R Fusion Planner
+==================
+
+This product includes software and data adapted from:
+
+  persona5_calculator
+  https://github.com/chinhodado/persona5_calculator
+  Licensed under the Apache License, Version 2.0
+
+  persona5_calculator is itself derived from persona-fusion-calculator
+  by Anthony Lieuallen (https://github.com/arantius/persona-fusion-calculator),
+  whose copyright is retained in the LICENSE file of both projects.
+  The Persona 5-specific data, fusion tables, skill data, and ongoing
+  maintenance of persona5_calculator are the work of chinhodado.
+
+  Copyright 2013, Anthony Lieuallen
+
+The following source files in this repository are derived from persona5_calculator:
+
+  src/data/PersonaDataRoyal.ts   (adapted from data/PersonaDataRoyal.ts)
+  src/data/SkillDataRoyal.ts     (adapted from data/SkillDataRoyal.ts)
+  src/data/ItemDataRoyal.ts      (adapted from data/ItemDataRoyal.ts)
+  src/data/Data5Royal.ts         (adapted from data/Data5Royal.ts)
+  src/engine/FusionCalculator.ts (adapted from src/FusionCalculator.ts)
+
+Adaptations made: converted from AngularJS/global-variable pattern to ES modules
+(TypeScript named exports); added getRecipesDeep() for recursive tree building.
+All fusion logic, arcana tables, persona stats, skill data, and special/rare combo
+lists originate from the above upstream projects.
+
+The Apache License 2.0 text is included in the LICENSE file in this repository.
