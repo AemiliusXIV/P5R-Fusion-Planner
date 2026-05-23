@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/P5RFusionCalc/sw.js', { scope: '/P5RFusionCalc/' })})}
