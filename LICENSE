@@ -190,8 +190,21 @@ Copyright notices for works incorporated into this project:
    belongs to Anthony Lieuallen as the originating author, per the
    Apache 2.0 license carried through the project lineage.
 
-   Both projects are licensed under the Apache License, Version 2.0.
-   You may obtain a copy at http://www.apache.org/licenses/LICENSE-2.0
+   fiber-saveutil
+   Copyright (c) zarroboogs
+   https://github.com/zarroboogs/fiber-saveutil
+   AES decryption logic in the companion save reader is ported from
+   this project.
+
+   KingdomSaveEditor
+   Copyright (c) Xeeynamo
+   https://github.com/Xeeynamo/KingdomSaveEditor
+   Compendium offsets and the persona ID lookup table used by the
+   companion save reader are from KHSave.LibPersona5.
+
+   All of the above projects are licensed under the Apache License,
+   Version 2.0. You may obtain a copy at
+   http://www.apache.org/licenses/LICENSE-2.0
 
 ---
 

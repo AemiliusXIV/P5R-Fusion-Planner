@@ -28,4 +28,21 @@ Adaptations made: converted from AngularJS/global-variable pattern to ES modules
 All fusion logic, arcana tables, persona stats, skill data, and special/rare combo
 lists originate from the above upstream projects.
 
+The companion/ subdirectory contains a Windows save reader that incorporates
+work from two additional Apache 2.0 projects:
+
+  fiber-saveutil
+  Copyright (c) zarroboogs
+  https://github.com/zarroboogs/fiber-saveutil
+  The AES-256-CBC decryption logic in companion/Decryption.cs is ported from
+  fiber-saveutil's save.py module.
+
+  KingdomSaveEditor
+  Copyright (c) Xeeynamo
+  https://github.com/Xeeynamo/KingdomSaveEditor
+  The compendium offsets (0x41D8, 464 × 48-byte entries) and the
+  persona ID → name lookup table (companion/Resources/persona-ids.txt,
+  copied from KHSave.LibPersona5/Resources/Persona5/Royal_Demon.txt)
+  are from KHSave.LibPersona5.
+
 The Apache License 2.0 text is included in the LICENSE file in this repository.

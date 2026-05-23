@@ -28,3 +28,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Companion (.NET) build artifacts
+companion/bin/
+companion/obj/
+companion/publish/
