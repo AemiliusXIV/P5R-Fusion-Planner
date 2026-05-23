@@ -84,7 +84,7 @@ export function PersonaList() {
           <div className="relative flex-1 min-w-[200px] max-w-xs">
             <input
               type="text"
-              placeholder="Ingredient search (e.g. Pyro Jack)..."
+              placeholder="Persona search (e.g. Jack Frost)..."
               value={ingredientFilter}
               onChange={e => setIngredientFilter(e.target.value)}
               className="input-p5 w-full"

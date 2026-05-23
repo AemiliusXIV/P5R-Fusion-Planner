@@ -51,9 +51,9 @@
     scrollbar-color: #3a3a3a #1e1e1e;
   }
 
-  /* Black & white mode — simple CSS filter, no component changes needed */
+  /* Muted colours mode — reduces saturation heavily, keeps dark structure */
   .bw-mode {
-    filter: grayscale(1) contrast(1.05);
+    filter: saturate(0.15) brightness(0.97);
   }
 
   /* Comfortable display: bump base font size up */

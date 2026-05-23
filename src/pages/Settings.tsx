@@ -72,8 +72,8 @@ export function Settings() {
   ];
 
   const colorOptions: { value: ColorMode; label: string; desc: string }[] = [
-    { value: 'p5',  label: 'Persona 5',     desc: 'Full colour theme — red, gold, and black.' },
-    { value: 'bw',  label: 'Black & White', desc: 'Greyscale mode. All colours removed for a cleaner, contrast-only look.' },
+    { value: 'p5', label: 'Persona 5',    desc: 'Full colour theme — red, gold, and black.' },
+    { value: 'bw', label: 'Muted Colors', desc: 'Heavily desaturated dark mode. Keeps the layout and contrast but removes most colour, for a quieter look.' },
   ];
 
   return (
@@ -242,10 +242,17 @@ export function Settings() {
 
       {/* ── Owned data ── */}
       <section className="card-p5 p-4">
-        <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-1">Owned Persona Data</h2>
+        <div className="flex items-center gap-3 mb-1">
+          <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm">Owned Persona Data</h2>
+          <span className="text-[10px] font-display tracking-wider text-green-500 border border-green-800 bg-green-950/40 px-1.5 py-0.5">
+            AUTO-SAVED
+          </span>
+        </div>
         <p className="text-xs text-gray-500 font-display mb-3">
-          Your owned and wishlist data is saved automatically in your browser. Use Export to back it up
-          as a JSON file, or Import to restore from a backup or load from the save-file companion tool.
+          Everything — owned personas, wishlist, settings, DLC toggles — is saved automatically
+          to your browser's local storage. It persists across page refreshes and browser restarts
+          as long as you don't clear site data. Use Export to back it up as a JSON file you can
+          keep, or Import to restore from a backup.
         </p>
         <div className="text-sm text-gray-400 font-display mb-4">
           {ownedCount} owned · {wishlistCount} wishlisted
