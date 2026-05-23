@@ -1,0 +1,102 @@
+import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { skillMapRoyal } from '../engine/initData';
+
+const ALL_ELEMENTS = ['phys','gun','fire','ice','elec','wind','psy','nuke','bless','curse','almighty','ailment','support','passive','healing','trait'];
+
+function getSkillCost(element: string, cost?: number): string {
+  if (element === 'passive' || element === 'trait') return '—';
+  if (!cost) return '—';
+  return cost < 100 ? `${cost}% HP` : `${cost / 100} SP`;
+}
+
+const elemColor: Record<string, string> = {
+  phys: 'text-orange-400', gun: 'text-gray-400', fire: 'text-red-400',
+  ice: 'text-blue-400', elec: 'text-yellow-400', wind: 'text-green-400',
+  psy: 'text-purple-400', nuke: 'text-pink-400', bless: 'text-yellow-200',
+  curse: 'text-purple-500', almighty: 'text-red-300', ailment: 'text-teal-400',
+  support: 'text-cyan-400', passive: 'text-gray-500', healing: 'text-emerald-400',
+  trait: 'text-p5gold',
+};
+
+export function SkillList() {
+  const [nameFilter, setNameFilter] = useState('');
+  const [elemFilter, setElemFilter] = useState('');
+
+  const skills = useMemo(() => {
+    return Object.entries(skillMapRoyal).map(([name, s]) => ({
+      name,
+      effect: s.effect,
+      element: s.element,
+      cost: s.cost,
+      personas: s.personas,
+      unique: s.unique,
+      costDisplay: getSkillCost(s.element, s.cost),
+    }));
+  }, []);
+
+  const filtered = useMemo(() => {
+    return skills.filter(s => {
+      if (nameFilter && !s.name.toLowerCase().includes(nameFilter.toLowerCase())) return false;
+      if (elemFilter && s.element !== elemFilter) return false;
+      return true;
+    });
+  }, [skills, nameFilter, elemFilter]);
+
+  return (
+    <div className="flex flex-col gap-4 p-4 pb-20 md:pb-4">
+      <div className="flex items-center gap-3 border-b border-p5border pb-4">
+        <div className="w-1 h-8 bg-p5red" />
+        <h1 className="font-display font-bold text-2xl text-p5white tracking-widest uppercase">Skills</h1>
+        <span className="text-gray-500 text-sm font-display ml-auto">{filtered.length} shown</span>
+      </div>
+
+      <div className="flex gap-2 flex-wrap">
+        <input
+          type="text"
+          placeholder="Search skills..."
+          value={nameFilter}
+          onChange={e => setNameFilter(e.target.value)}
+          className="input-p5 max-w-xs"
+        />
+        <select
+          value={elemFilter}
+          onChange={e => setElemFilter(e.target.value)}
+          className="input-p5 w-auto"
+        >
+          <option value="">All Elements</option>
+          {ALL_ELEMENTS.map(e => (
+            <option key={e} value={e}>{e.charAt(0).toUpperCase() + e.slice(1)}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex flex-col gap-px">
+        {filtered.map(skill => (
+          <div key={skill.name} className="card-p5 flex items-start gap-3 px-3 py-2">
+            <span className={`font-display text-xs uppercase w-16 shrink-0 pt-0.5 ${elemColor[skill.element] ?? 'text-gray-400'}`}>
+              {skill.element}
+            </span>
+            <div className="flex-1 min-w-0">
+              <div className="font-display font-bold text-sm text-p5white">{skill.name}</div>
+              <div className="text-xs text-gray-500 mt-0.5 truncate">{skill.effect}</div>
+              {skill.personas && Object.keys(skill.personas).length > 0 && (
+                <div className="text-[10px] text-gray-600 mt-1 flex flex-wrap gap-1">
+                  {Object.entries(skill.personas).slice(0, 5).map(([pName]) => (
+                    <Link key={pName} to={`/persona/${encodeURIComponent(pName)}`} className="hover:text-p5red transition-colors">
+                      {pName}
+                    </Link>
+                  ))}
+                  {Object.keys(skill.personas).length > 5 && (
+                    <span>+{Object.keys(skill.personas).length - 5} more</span>
+                  )}
+                </div>
+              )}
+            </div>
+            <span className="text-xs text-gray-600 font-display shrink-0">{skill.costDisplay}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

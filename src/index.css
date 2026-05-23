@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    @apply bg-p5black text-p5white;
+    font-family: 'Inter', sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  #root {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@layer components {
+  .badge-clip {
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  }
+
+  .card-p5 {
+    @apply bg-p5card border-l-2 border-p5red;
+  }
+
+  .btn-p5 {
+    @apply bg-p5red text-p5white font-display font-bold tracking-widest uppercase px-4 py-2 hover:bg-red-700 transition-colors;
+  }
+
+  .btn-ghost {
+    @apply border border-p5border text-p5white font-display font-bold tracking-widest uppercase px-4 py-2 hover:border-p5red hover:text-p5red transition-colors;
+  }
+
+  .input-p5 {
+    @apply bg-p5gray border border-p5border text-p5white placeholder-gray-500 px-3 py-2 focus:outline-none focus:border-p5red transition-colors w-full;
+  }
+}
+
+@layer utilities {
+  .text-display {
+    font-family: 'Rajdhani', sans-serif;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #3a3a3a #1e1e1e;
+  }
+}
