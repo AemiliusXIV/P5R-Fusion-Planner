@@ -92,7 +92,21 @@ export const useStore = create<AppState>()(
       },
 
       importOwned(data) {
-        set({ ownedMap: data.personas });
+        // 'save-file' source comes from the companion save reader. It only
+        // contains owned personas — merge so we preserve user-set wishlist
+        // and notes data. Manual exports replace the entire map.
+        if (data.source === 'save-file') {
+          set(state => {
+            const merged: OwnedMap = { ...state.ownedMap };
+            for (const [name, patch] of Object.entries(data.personas)) {
+              const existing = merged[name] ?? { owned: false, wishlist: false, notes: '' };
+              merged[name] = { ...existing, ...patch };
+            }
+            return { ownedMap: merged };
+          });
+        } else {
+          set({ ownedMap: data.personas });
+        }
       },
 
       exportOwned(): ImportedOwnedData {

@@ -4,6 +4,7 @@ import { PersonaDetail } from './pages/PersonaDetail';
 import { SkillList } from './pages/SkillList';
 import { FusionPlan } from './pages/FusionPlan';
 import { Settings } from './pages/Settings';
+import { Import } from './pages/Import';
 import { Layout } from './Layout';
 
 export const router = createHashRouter([
@@ -17,6 +18,7 @@ export const router = createHashRouter([
       { path: 'persona/:name', element: <PersonaDetail /> },
       { path: 'fusion-tree/:name', element: <FusionPlan /> },
       { path: 'settings', element: <Settings /> },
+      { path: 'import', element: <Import /> },
     ],
   },
 ]);
