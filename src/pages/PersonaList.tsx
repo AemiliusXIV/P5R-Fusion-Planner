@@ -16,7 +16,7 @@ export function PersonaList() {
     arcanaFilter, setArcanaFilter,
     showOwnedOnly, setShowOwnedOnly,
     showWishlistOnly, setShowWishlistOnly,
-    ownedMap,
+    ownedMap, displaySize,
   } = useStore();
 
   const [sortBy, setSortBy] = useState<'level' | 'name' | 'arcana'>('level');
@@ -139,7 +139,11 @@ export function PersonaList() {
       {filtered.length === 0 ? (
         <div className="text-center text-gray-500 py-16 font-display text-lg">No personas found.</div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        <div className={`grid gap-3 ${
+          displaySize === 'compact'     ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5' :
+          displaySize === 'comfortable' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3' :
+                                          'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+        }`}>
           {filtered.map(p => (
             <PersonaCard key={p.name} persona={p} />
           ))}

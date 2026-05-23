@@ -32,6 +32,21 @@ export function NavBar() {
             </NavLink>
           ))}
         </div>
+
+        {/* Credit */}
+        <div className="mt-auto p-4 border-t border-p5border">
+          <a
+            href="https://github.com/AemiliusXIV/P5RFusionCalc"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] text-gray-600 hover:text-p5red font-display tracking-wider transition-colors block"
+          >
+            by AemiliusXIV ↗
+          </a>
+          <p className="text-[10px] text-gray-700 font-display mt-0.5">
+            Data: chinhodado
+          </p>
+        </div>
       </nav>
 
       {/* Mobile bottom bar */}

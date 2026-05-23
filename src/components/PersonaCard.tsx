@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function PersonaCard({ persona }: Props) {
-  const { ownedMap, setOwned } = useStore();
+  const { ownedMap, setOwned, displaySize } = useStore();
   const state = ownedMap[persona.name];
   const isOwned = !!state?.owned;
   const isWishlist = !!state?.wishlist;
@@ -17,8 +17,10 @@ export function PersonaCard({ persona }: Props) {
   const statLabels = ['STR', 'MAG', 'END', 'AGI', 'LCK'];
   const maxStat = Math.max(...persona.stats);
 
+  const padClass = displaySize === 'compact' ? 'p-2' : displaySize === 'comfortable' ? 'p-4' : 'p-3';
+
   return (
-    <div className={`card-p5 relative flex flex-col gap-2 p-3 hover:border-p5red transition-all cursor-pointer group ${isOwned ? 'border-green-500' : ''}`}>
+    <div className={`card-p5 relative flex flex-col gap-2 ${padClass} hover:border-p5red transition-all cursor-pointer group ${isOwned ? 'border-green-500' : ''}`}>
       {/* Wishlist star */}
       {isWishlist && (
         <span className="absolute top-2 right-2 text-p5gold text-sm" title="Wishlisted">★</span>

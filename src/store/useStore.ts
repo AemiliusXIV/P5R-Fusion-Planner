@@ -4,11 +4,17 @@ import type { OwnedMap, OwnedState, ImportedOwnedData } from '../engine/types';
 import { buildPersonaRuntime, allDlcPersonaNames } from '../engine/initData';
 import type { PersonaRuntime } from '../engine/initData';
 import { FusionCalculator } from '../engine/FusionCalculator';
+import { confidantNames } from '../data/Data5Royal';
+
+export type DisplaySize = 'compact' | 'normal' | 'comfortable';
+export type ColorMode = 'p5' | 'bw';
 
 interface SettingsState {
   dlcEnabled: Record<string, boolean>;
   maxedConfidants: Record<string, boolean>;
   fusionTreeDepth: number;
+  displaySize: DisplaySize;
+  colorMode: ColorMode;
 }
 
 interface AppState extends SettingsState {
@@ -29,8 +35,12 @@ interface AppState extends SettingsState {
   exportOwned(): ImportedOwnedData;
 
   setDlcEnabled(name: string, enabled: boolean): void;
+  setAllDlcEnabled(enabled: boolean): void;
   setMaxedConfidant(arcana: string, maxed: boolean): void;
+  setAllConfidants(maxed: boolean): void;
   setFusionTreeDepth(depth: number): void;
+  setDisplaySize(v: DisplaySize): void;
+  setColorMode(v: ColorMode): void;
 
   setNameFilter(v: string): void;
   setIngredientFilter(v: string): void;
@@ -64,6 +74,8 @@ export const useStore = create<AppState>()(
       dlcEnabled: defaultDlcEnabled,
       maxedConfidants: {},
       fusionTreeDepth: 4,
+      displaySize: 'normal',
+      colorMode: 'p5',
 
       ...initialEngine,
 
@@ -96,13 +108,28 @@ export const useStore = create<AppState>()(
         set({ dlcEnabled, ...buildEngine(dlcEnabled) });
       },
 
+      setAllDlcEnabled(enabled) {
+        const dlcEnabled: Record<string, boolean> = {};
+        for (const name of allDlcPersonaNames) dlcEnabled[name] = enabled;
+        set({ dlcEnabled, ...buildEngine(dlcEnabled) });
+      },
+
       setMaxedConfidant(arcana, maxed) {
         set(state => ({ maxedConfidants: { ...state.maxedConfidants, [arcana]: maxed } }));
+      },
+
+      setAllConfidants(maxed) {
+        const all: Record<string, boolean> = {};
+        for (const arcana of Object.keys(confidantNames)) all[arcana] = maxed;
+        set({ maxedConfidants: all });
       },
 
       setFusionTreeDepth(depth) {
         set({ fusionTreeDepth: Math.max(1, Math.min(6, depth)) });
       },
+
+      setDisplaySize(v) { set({ displaySize: v }); },
+      setColorMode(v) { set({ colorMode: v }); },
 
       setNameFilter(v) { set({ nameFilter: v }); },
       setIngredientFilter(v) { set({ ingredientFilter: v }); },
@@ -122,6 +149,8 @@ export const useStore = create<AppState>()(
         dlcEnabled: state.dlcEnabled,
         maxedConfidants: state.maxedConfidants,
         fusionTreeDepth: state.fusionTreeDepth,
+        displaySize: state.displaySize,
+        colorMode: state.colorMode,
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {

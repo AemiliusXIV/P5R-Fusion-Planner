@@ -1,13 +1,25 @@
 import { useRef } from 'react';
 import { useStore } from '../store/useStore';
+import type { DisplaySize, ColorMode } from '../store/useStore';
 import { dlcPersona, confidantNames } from '../data/Data5Royal';
 import type { ImportedOwnedData } from '../engine/types';
 
+const DEPTH_DESCRIPTIONS: Record<number, string> = {
+  1: 'Shows only the two direct ingredients for your target persona. Good for a quick lookup.',
+  2: 'Shows ingredients and what you need to fuse each of them. Two steps total.',
+  3: 'Three layers deep — usually enough to see whether base-level personas are in the chain.',
+  4: 'Default. Most fusion chains in P5R fully resolve at this depth. Recommended starting point.',
+  5: 'Extended depth — useful for complex personas like Yoshitsune or Satanael where chains are long.',
+  6: 'Maximum depth. Can be slow for high-level personas. Use when depth 5 still leaves unknowns.',
+};
+
 export function Settings() {
   const {
-    dlcEnabled, setDlcEnabled,
-    maxedConfidants, setMaxedConfidant,
+    dlcEnabled, setDlcEnabled, setAllDlcEnabled,
+    maxedConfidants, setMaxedConfidant, setAllConfidants,
     fusionTreeDepth, setFusionTreeDepth,
+    displaySize, setDisplaySize,
+    colorMode, setColorMode,
     exportOwned, importOwned,
     ownedMap,
   } = useStore();
@@ -50,6 +62,19 @@ export function Settings() {
   const wishlistCount = Object.values(ownedMap).filter(s => s.wishlist).length;
 
   const confidants = Object.entries(confidantNames);
+  const allConfidantsMaxed = confidants.every(([arcana]) => !!maxedConfidants[arcana]);
+  const allDlcEnabled = dlcPersona.flat().every(n => !!dlcEnabled[n]);
+
+  const sizeOptions: { value: DisplaySize; label: string; desc: string }[] = [
+    { value: 'compact',     label: 'Compact',     desc: 'More cards on screen, smaller text. Good for wide monitors or quick browsing.' },
+    { value: 'normal',      label: 'Normal',      desc: 'Default layout. Balanced for most screens.' },
+    { value: 'comfortable', label: 'Comfortable', desc: 'Larger text and cards. Easier to read, fewer cards visible at once.' },
+  ];
+
+  const colorOptions: { value: ColorMode; label: string; desc: string }[] = [
+    { value: 'p5',  label: 'Persona 5',     desc: 'Full colour theme — red, gold, and black.' },
+    { value: 'bw',  label: 'Black & White', desc: 'Greyscale mode. All colours removed for a cleaner, contrast-only look.' },
+  ];
 
   return (
     <div className="flex flex-col gap-6 p-4 pb-20 md:pb-4 max-w-2xl">
@@ -58,29 +83,68 @@ export function Settings() {
         <h1 className="font-display font-bold text-2xl text-p5white tracking-widest uppercase">Settings</h1>
       </div>
 
-      {/* Owned data */}
+      {/* ── Display ── */}
       <section className="card-p5 p-4">
-        <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-4">Owned Persona Data</h2>
-        <div className="text-sm text-gray-400 font-display mb-4">
-          {ownedCount} owned · {wishlistCount} wishlisted
-        </div>
-        <div className="flex gap-3 flex-wrap">
-          <button onClick={handleExport} className="btn-ghost text-sm">
-            Export JSON
-          </button>
-          <button onClick={() => fileInputRef.current?.click()} className="btn-ghost text-sm">
-            Import JSON
-          </button>
-          <input ref={fileInputRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
-        </div>
-        <p className="text-xs text-gray-600 mt-3 font-display">
-          Export saves your owned/wishlist list as a JSON file. Import loads from a previously exported file or from the companion save reader (Phase 2).
+        <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-1">Display Size</h2>
+        <p className="text-xs text-gray-500 font-display mb-4">
+          Controls card size and text size together. Changing this takes effect immediately.
         </p>
+        <div className="flex flex-col gap-2">
+          {sizeOptions.map(opt => (
+            <label key={opt.value} className="flex items-start gap-3 cursor-pointer group">
+              <input
+                type="radio"
+                name="displaySize"
+                value={opt.value}
+                checked={displaySize === opt.value}
+                onChange={() => setDisplaySize(opt.value)}
+                className="accent-p5red mt-0.5"
+              />
+              <div>
+                <span className={`font-display font-bold text-sm ${displaySize === opt.value ? 'text-p5white' : 'text-gray-400 group-hover:text-p5white'} transition-colors`}>
+                  {opt.label}
+                </span>
+                <p className="text-xs text-gray-600 mt-0.5">{opt.desc}</p>
+              </div>
+            </label>
+          ))}
+        </div>
+
+        <div className="mt-5 border-t border-p5border pt-4">
+          <h3 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-1">Colour Mode</h3>
+          <p className="text-xs text-gray-500 font-display mb-3">
+            Black & white mode applies a greyscale filter to the entire app.
+          </p>
+          <div className="flex flex-col gap-2">
+            {colorOptions.map(opt => (
+              <label key={opt.value} className="flex items-start gap-3 cursor-pointer group">
+                <input
+                  type="radio"
+                  name="colorMode"
+                  value={opt.value}
+                  checked={colorMode === opt.value}
+                  onChange={() => setColorMode(opt.value)}
+                  className="accent-p5red mt-0.5"
+                />
+                <div>
+                  <span className={`font-display font-bold text-sm ${colorMode === opt.value ? 'text-p5white' : 'text-gray-400 group-hover:text-p5white'} transition-colors`}>
+                    {opt.label}
+                  </span>
+                  <p className="text-xs text-gray-600 mt-0.5">{opt.desc}</p>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* Fusion tree depth */}
+      {/* ── Fusion chain depth ── */}
       <section className="card-p5 p-4">
-        <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-4">Fusion Chain Depth</h2>
+        <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-1">Fusion Chain Depth</h2>
+        <p className="text-xs text-gray-500 font-display mb-4">
+          How many fusion steps the Fusion Tree Planner expands when you open it for a persona.
+          Each step reveals the ingredients needed to fuse the previous layer's personas.
+        </p>
         <div className="flex items-center gap-4">
           <input
             type="range"
@@ -92,16 +156,36 @@ export function Settings() {
           />
           <span className="font-display font-bold text-p5white text-xl w-6">{fusionTreeDepth}</span>
         </div>
-        <p className="text-xs text-gray-600 mt-2 font-display">
-          How many levels deep the fusion chain planner builds. Higher = more detail, slower to compute.
+        <p className="text-xs text-gray-400 mt-3 font-display leading-relaxed">
+          {DEPTH_DESCRIPTIONS[fusionTreeDepth]}
         </p>
+        <div className="mt-3 grid grid-cols-6 gap-1">
+          {[1,2,3,4,5,6].map(d => (
+            <button
+              key={d}
+              onClick={() => setFusionTreeDepth(d)}
+              className={`text-xs font-display font-bold py-1 border transition-colors ${fusionTreeDepth === d ? 'border-p5red text-p5red bg-red-950/30' : 'border-p5border text-gray-600 hover:border-p5red hover:text-p5red'}`}
+            >
+              {d}
+            </button>
+          ))}
+        </div>
       </section>
 
-      {/* Confidants */}
+      {/* ── Confidants ── */}
       <section className="card-p5 p-4">
-        <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-4">Maxed Confidants</h2>
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm">Maxed Confidants</h2>
+          <button
+            onClick={() => setAllConfidants(!allConfidantsMaxed)}
+            className="text-xs font-display font-bold tracking-wider uppercase border border-p5border text-gray-500 hover:border-p5red hover:text-p5red px-2 py-1 transition-colors"
+          >
+            {allConfidantsMaxed ? 'Deselect All' : 'Select All'}
+          </button>
+        </div>
         <p className="text-xs text-gray-500 font-display mb-3">
-          Mark which confidants you've maxed so the fusion planner can flag locked recipes.
+          Mark confidants you've reached max rank with. The Fusion Tree Planner will flag
+          personas that require a specific confidant rank as locked or unlocked accordingly.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
           {confidants.map(([arcana, label]) => (
@@ -112,7 +196,7 @@ export function Settings() {
                 onChange={e => setMaxedConfidant(arcana, e.target.checked)}
                 className="accent-p5red"
               />
-              <span className={`text-sm font-display transition-colors ${maxedConfidants[arcana] ? 'text-p5white' : 'text-gray-500'}`}>
+              <span className={`text-sm font-display transition-colors ${maxedConfidants[arcana] ? 'text-p5white' : 'text-gray-500 group-hover:text-gray-300'}`}>
                 {label}
               </span>
             </label>
@@ -120,30 +204,60 @@ export function Settings() {
         </div>
       </section>
 
-      {/* DLC toggles */}
+      {/* ── DLC personas ── */}
       <section className="card-p5 p-4">
-        <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-4">DLC Personas</h2>
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm">DLC Personas</h2>
+          <button
+            onClick={() => setAllDlcEnabled(!allDlcEnabled)}
+            className="text-xs font-display font-bold tracking-wider uppercase border border-p5border text-gray-500 hover:border-p5red hover:text-p5red px-2 py-1 transition-colors"
+          >
+            {allDlcEnabled ? 'Disable All' : 'Enable All'}
+          </button>
+        </div>
         <p className="text-xs text-gray-500 font-display mb-3">
-          Enable DLC personas you own so they appear in the list and can be used in fusion recipes.
+          Enable DLC persona packs you own. Enabled personas appear in the list and can be
+          used as ingredients in fusion recipes. The fusion engine rebuilds each time you toggle a group.
         </p>
         <div className="flex flex-col gap-2">
           {dlcPersona.map((group, i) => (
             <div key={i} className="flex gap-3 flex-wrap border-b border-p5border pb-2 last:border-0">
               {group.map(pName => (
-                <label key={pName} className="flex items-center gap-2 cursor-pointer">
+                <label key={pName} className="flex items-center gap-2 cursor-pointer group">
                   <input
                     type="checkbox"
                     checked={!!dlcEnabled[pName]}
                     onChange={e => setDlcEnabled(pName, e.target.checked)}
                     className="accent-p5red"
                   />
-                  <span className={`text-sm font-display ${dlcEnabled[pName] ? 'text-p5white' : 'text-gray-500'}`}>
+                  <span className={`text-sm font-display transition-colors ${dlcEnabled[pName] ? 'text-p5white' : 'text-gray-500 group-hover:text-gray-300'}`}>
                     {pName}
                   </span>
                 </label>
               ))}
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ── Owned data ── */}
+      <section className="card-p5 p-4">
+        <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-1">Owned Persona Data</h2>
+        <p className="text-xs text-gray-500 font-display mb-3">
+          Your owned and wishlist data is saved automatically in your browser. Use Export to back it up
+          as a JSON file, or Import to restore from a backup or load from the save-file companion tool.
+        </p>
+        <div className="text-sm text-gray-400 font-display mb-4">
+          {ownedCount} owned · {wishlistCount} wishlisted
+        </div>
+        <div className="flex gap-3 flex-wrap">
+          <button onClick={handleExport} className="btn-ghost text-sm">
+            Export JSON
+          </button>
+          <button onClick={() => fileInputRef.current?.click()} className="btn-ghost text-sm">
+            Import JSON
+          </button>
+          <input ref={fileInputRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
         </div>
       </section>
     </div>
