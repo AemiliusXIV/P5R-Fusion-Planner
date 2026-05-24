@@ -43,7 +43,12 @@ export function Import() {
       // Accept both standard base64 and URL-safe base64
       const normalised = raw.replace(/-/g, '+').replace(/_/g, '/');
       const padded = normalised + '='.repeat((4 - normalised.length % 4) % 4);
-      const json = atob(padded);
+      // atob decodes to binary (Latin-1), not UTF-8. Run it through TextDecoder
+      // so multi-byte sequences like "Arsène" (0xC3 0xA8) survive intact.
+      const binaryStr = atob(padded);
+      const bytes = new Uint8Array(binaryStr.length);
+      for (let i = 0; i < binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
+      const json = new TextDecoder('utf-8').decode(bytes);
       const parsed = JSON.parse(json) as ImportedOwnedData;
 
       if (parsed.version !== 1 || !parsed.personas || typeof parsed.personas !== 'object') {

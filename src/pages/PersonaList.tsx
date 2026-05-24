@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import { useStore } from '../store/useStore';
 import { PersonaCard } from '../components/PersonaCard';
 
@@ -20,10 +20,14 @@ export function PersonaList() {
   } = useStore();
 
   const [sortBy, setSortBy] = useState<'level' | 'name' | 'arcana'>('level');
+  const [visibleCount, setVisibleCount] = useState(60);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const ingredientResults = useMemo(() => {
-    if (!ingredientFilter.trim()) return null;
-    const p = personaList.find(x => x.name.toLowerCase() === ingredientFilter.toLowerCase().trim());
+    const q = ingredientFilter.trim().toLowerCase();
+    if (!q) return null;
+    // Partial match: first persona whose name contains the search term
+    const p = personaList.find(x => x.name.toLowerCase().includes(q));
     if (!p) return new Set<string>();
     const recipes = calculator.getAllResultingRecipesFrom(p);
     return new Set(recipes.map(r => r.result.name));
@@ -62,6 +66,24 @@ export function PersonaList() {
     return list;
   }, [personaList, nameFilter, ingredientResults, arcanaFilter, showOwnedOnly, showWishlistOnly, sortBy, ownedMap]);
 
+  // Reset to first page whenever the filtered set changes
+  useEffect(() => { setVisibleCount(60); }, [filtered]);
+
+  // Load more when the sentinel scrolls into view
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      entries => { if (entries[0].isIntersecting) setVisibleCount(n => n + 40); },
+      { rootMargin: '300px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const visible = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
   return (
     <div className="flex flex-col gap-4 p-4 pb-20 md:pb-4">
       {/* Header */}
@@ -84,7 +106,7 @@ export function PersonaList() {
           <div className="relative flex-1 min-w-[200px] max-w-xs">
             <input
               type="text"
-              placeholder="Persona search (e.g. Jack Frost)..."
+              placeholder="Fusion ingredient (e.g. Jack Frost)..."
               value={ingredientFilter}
               onChange={e => setIngredientFilter(e.target.value)}
               className="input-p5 w-full"
@@ -139,15 +161,23 @@ export function PersonaList() {
       {filtered.length === 0 ? (
         <div className="text-center text-gray-500 py-16 font-display text-lg">No personas found.</div>
       ) : (
-        <div className={`grid gap-3 ${
-          displaySize === 'compact'     ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5' :
-          displaySize === 'comfortable' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3' :
-                                          'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-        }`}>
-          {filtered.map(p => (
-            <PersonaCard key={p.name} persona={p} />
-          ))}
-        </div>
+        <>
+          <div className={`grid gap-3 ${
+            displaySize === 'compact'     ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5' :
+            displaySize === 'comfortable' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3' :
+                                            'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+          }`}>
+            {visible.map(p => (
+              <PersonaCard key={p.name} persona={p} />
+            ))}
+          </div>
+          <div ref={sentinelRef} className="h-1" />
+          {hasMore && (
+            <div className="text-center text-gray-600 text-xs font-display py-2 tracking-wider">
+              {visible.length} / {filtered.length}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
