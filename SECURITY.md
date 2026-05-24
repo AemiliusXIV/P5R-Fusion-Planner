@@ -47,7 +47,7 @@ Save file on disk
   → FileStream (read-only) → byte[] in memory → file handle closed
   → AES-CBC decrypt (in memory, .NET Aes class)
   → zlib decompress (in memory, .NET ZLibStream)
-  → read 464 compendium entries at offset 0x41D8
+  → read 464 compendium entries at offset 0x3F40
   → build JSON string
   → URL-encode as hash fragment (never sent to a server)
   → user clicks "Open in Browser" → browser opens local URL

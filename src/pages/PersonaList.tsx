@@ -23,14 +23,15 @@ export function PersonaList() {
   const [visibleCount, setVisibleCount] = useState(60);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const ingredientResults = useMemo(() => {
+  // Returns null when no filter is active, or { matched, results } when active.
+  // matched is the persona name found; null when no persona matches the query.
+  const ingredientData = useMemo<{ matched: string | null; results: Set<string> } | null>(() => {
     const q = ingredientFilter.trim().toLowerCase();
     if (!q) return null;
-    // Partial match: first persona whose name contains the search term
     const p = personaList.find(x => x.name.toLowerCase().includes(q));
-    if (!p) return new Set<string>();
+    if (!p) return { matched: null, results: new Set() };
     const recipes = calculator.getAllResultingRecipesFrom(p);
-    return new Set(recipes.map(r => r.result.name));
+    return { matched: p.name, results: new Set(recipes.map(r => r.result.name)) };
   }, [ingredientFilter, personaList, calculator]);
 
   const filtered = useMemo(() => {
@@ -41,8 +42,8 @@ export function PersonaList() {
       list = list.filter(p => p.name.toLowerCase().includes(q));
     }
 
-    if (ingredientResults !== null) {
-      list = list.filter(p => ingredientResults.has(p.name));
+    if (ingredientData !== null) {
+      list = list.filter(p => ingredientData.results.has(p.name));
     }
 
     if (arcanaFilter) {
@@ -64,7 +65,7 @@ export function PersonaList() {
     });
 
     return list;
-  }, [personaList, nameFilter, ingredientResults, arcanaFilter, showOwnedOnly, showWishlistOnly, sortBy, ownedMap]);
+  }, [personaList, nameFilter, ingredientData, arcanaFilter, showOwnedOnly, showWishlistOnly, sortBy, ownedMap]);
 
   // Reset to first page whenever the filtered set changes
   useEffect(() => { setVisibleCount(60); }, [filtered]);
@@ -83,6 +84,7 @@ export function PersonaList() {
 
   const visible = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
+  const hasFilters = !!(nameFilter.trim() || ingredientFilter.trim() || arcanaFilter || showOwnedOnly || showWishlistOnly);
 
   return (
     <div className="flex flex-col gap-4 p-4 pb-20 md:pb-4">
@@ -111,9 +113,9 @@ export function PersonaList() {
               onChange={e => setIngredientFilter(e.target.value)}
               className="input-p5 w-full"
             />
-            {ingredientResults !== null && (
+            {ingredientData !== null && (
               <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-gray-500 font-display">
-                {ingredientResults.size} results
+                {ingredientData.results.size} results
               </span>
             )}
           </div>
@@ -154,7 +156,43 @@ export function PersonaList() {
           >
             Wishlist only
           </button>
+          {hasFilters && (
+            <button
+              onClick={() => {
+                setNameFilter('');
+                setIngredientFilter('');
+                setArcanaFilter('');
+                setShowOwnedOnly(false);
+                setShowWishlistOnly(false);
+              }}
+              className="px-3 py-2 text-xs font-display font-bold tracking-wider uppercase border border-p5border text-gray-600 hover:border-p5red hover:text-p5red transition-colors ml-auto"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
+
+        {ingredientData !== null && (
+          <div className="flex items-center gap-2">
+            {ingredientData.matched ? (
+              <span className="inline-flex items-center gap-1.5 px-2 py-1 border border-p5border text-xs font-display text-gray-400 bg-p5gray/20">
+                Fusions using:
+                <span className="text-p5white font-bold">{ingredientData.matched}</span>
+                <button
+                  onClick={() => setIngredientFilter('')}
+                  className="text-gray-600 hover:text-p5red transition-colors ml-0.5"
+                  aria-label="Clear ingredient filter"
+                >
+                  ×
+                </button>
+              </span>
+            ) : (
+              <span className="text-xs text-gray-600 font-display">
+                No persona matching &ldquo;{ingredientFilter.trim()}&rdquo;
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Grid */}

@@ -43,37 +43,21 @@ jobs:
         with:
           files: companion/publish/P5RCompanion-*.exe
           name: Save Reader ${{ github.ref_name }}
-          prerelease: true
+          prerelease: false
           body: |
-            > ⚠️ **EARLY TESTING BUILD - NOT RECOMMENDED FOR GENERAL USE**
-            >
-            > This is an early release of the save reader and has not been
-            > tested against a wide range of real save files yet. Behaviour,
-            > naming, and the deep-link format may change without notice in
-            > future versions.
-            >
-            > **Use at your own risk.** The tool only ever reads your save
-            > file (it never writes back), but bugs in parsing or in the
-            > generated import data could result in incorrect owned-persona
-            > state in the planner. Always export your existing owned data
-            > from the planner before importing, so you can roll back.
+            Companion save reader for the [P5R Fusion Planner](https://aemiliusxiv.github.io/P5RFusionCalc/).
 
-            Companion save reader for the P5R Fusion Planner.
+            Reads your Persona 5 Royal PC save file and imports your owned personas
+            into the planner automatically. No manual marking needed.
 
-            **What it does:**
-            1. Auto-detects your P5R PC save folder
-            2. Pick a save slot, click *Read Selected Save*
-            3. Click *Open in Browser*: the planner opens and imports
-               your owned personas automatically
+            **Quick start:**
+            1. Run `P5RCompanion.exe`
+            2. Your save folder is detected automatically
+            3. Pick a save slot, click **Read Selected Save**
+            4. Click **Open in Browser** to import, or **Copy Link** to paste manually
 
-            **Privacy:**
-            - Original save file is never opened with write access
-            - No Steam ID required (static AES key)
-            - Only the persona compendium is read (22 KB of the 256 KB save)
-            - Protagonist name, playtime, items, money are not touched
-            - The deep-link uses a URL hash, which browsers never send to servers
-
-            Web app: https://aemiliusxiv.github.io/P5RFusionCalc/
+            For a full walkthrough, details on what data is read, and a privacy breakdown,
+            see the [How it works](https://github.com/AemiliusXIV/P5RFusionCalc/blob/master/docs/how-it-works.md) guide.
 
       - name: Upload as artifact (manual runs)
         if: github.event_name == 'workflow_dispatch'

@@ -189,9 +189,9 @@ public static class Decryption
     private static (ushort day, uint playtime, byte level) ParseHeaderDisplayInfo(byte[] header)
     {
         if (header.Length < 0x10) return (0, 0, 0);
-        // Playtime is a frame counter running at 30fps; divide to get seconds.
+        // Playtime is a frame counter running at 60fps; divide to get seconds.
         var playtimeFrames = BitConverter.ToUInt32(header, 0);
-        var playtime = playtimeFrames / 30u;
+        var playtime = playtimeFrames / 60u;
         var day = BitConverter.ToUInt16(header, 4);
         var level = header[9];
         return (day, playtime, level);
