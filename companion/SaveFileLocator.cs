@@ -54,20 +54,25 @@ public static class SaveFileLocator
         var slots = new List<SaveSlot>();
         if (!Directory.Exists(saveFolder)) return slots;
 
-        // Match DATA01 through DATA16 (no extension). Skip SYSTEM files.
+        // Each save slot is a subdirectory named DATA01..DATA16 containing
+        // a DATA.DAT file. The savedata folder itself does not hold the files
+        // directly.
         for (var i = 1; i <= 16; i++)
         {
             var slotName = $"DATA{i:D2}";
-            var path = Path.Combine(saveFolder, slotName);
-            if (!File.Exists(path)) continue;
+            var slotDir  = Path.Combine(saveFolder, slotName);
+            if (!Directory.Exists(slotDir)) continue;
 
-            var info = new FileInfo(path);
+            var dataFile = Path.Combine(slotDir, "DATA.DAT");
+            if (!File.Exists(dataFile)) continue;
+
+            var info = new FileInfo(dataFile);
             slots.Add(new SaveSlot
             {
-                FilePath = path,
-                SlotName = slotName,
+                FilePath     = dataFile,
+                SlotName     = slotName,
                 LastModified = info.LastWriteTime,
-                SizeBytes = info.Length,
+                SizeBytes    = info.Length,
             });
         }
 

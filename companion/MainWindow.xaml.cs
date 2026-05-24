@@ -35,6 +35,13 @@ public partial class MainWindow : Window
             return;
         }
 
+        LoadSlotsFromFolder();
+    }
+
+    private void LoadSlotsFromFolder()
+    {
+        if (_saveFolder == null) return;
+
         SaveFolderText.Text = _saveFolder;
 
         var slots = SaveFileLocator.ListSaveSlots(_saveFolder);
@@ -58,6 +65,25 @@ public partial class MainWindow : Window
         }
 
         SlotList.SelectedIndex = 0;
+        ReadButton.IsEnabled = true;
+    }
+
+    private void BrowseButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dlg = new Microsoft.Win32.OpenFolderDialog
+        {
+            Title = "Select your P5R save folder",
+            Multiselect = false,
+        };
+
+        if (_saveFolder != null)
+            dlg.InitialDirectory = _saveFolder;
+
+        if (dlg.ShowDialog() == true)
+        {
+            _saveFolder = dlg.FolderName;
+            LoadSlotsFromFolder();
+        }
     }
 
     private void ReadButton_Click(object sender, RoutedEventArgs e)

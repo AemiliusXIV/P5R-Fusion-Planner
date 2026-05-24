@@ -1,7 +1,7 @@
 <Window x:Class="P5RCompanion.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="P5R Fusion Planner — Save Reader"
+        Title="P5R Fusion Planner: Save Reader"
         Height="540" Width="640"
         WindowStartupLocation="CenterScreen"
         Background="#0d0d0d"
@@ -82,13 +82,23 @@
         <!-- Save folder display -->
         <Border Grid.Row="1" Background="{StaticResource P5Card}" Padding="12" Margin="0,0,0,12"
                 BorderBrush="{StaticResource P5Red}" BorderThickness="2,0,0,0">
-            <StackPanel>
-                <TextBlock Text="SAVE FOLDER" FontSize="10" FontWeight="Bold"
-                           Foreground="{StaticResource P5Red}" Margin="0,0,0,4"/>
-                <TextBlock x:Name="SaveFolderText" Text="—" FontSize="11"
-                           Foreground="{StaticResource P5Gray}" TextWrapping="Wrap"
-                           FontFamily="Consolas"/>
-            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="SAVE FOLDER" FontSize="10" FontWeight="Bold"
+                               Foreground="{StaticResource P5Red}" Margin="0,0,0,4"/>
+                    <TextBlock x:Name="SaveFolderText" Text="-" FontSize="11"
+                               Foreground="{StaticResource P5Gray}" TextWrapping="Wrap"
+                               FontFamily="Consolas"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="BROWSE" Click="BrowseButton_Click"
+                        Style="{StaticResource GhostButton}"
+                        Margin="12,0,0,0" VerticalAlignment="Center"
+                        FontSize="10" Padding="10,5"/>
+            </Grid>
         </Border>
 
         <!-- Save slot list -->
