@@ -34,15 +34,14 @@ work from two additional Apache 2.0 projects:
   fiber-saveutil
   Copyright (c) zarroboogs
   https://github.com/zarroboogs/fiber-saveutil
-  The AES-256-CBC decryption logic in companion/Decryption.cs is ported from
-  fiber-saveutil's save.py module.
+  Licensed under the Apache License, Version 2.0.
+  The companion save reader's decryption logic is based on this project.
 
-  KingdomSaveEditor
+  KingdomSaveEditor (KHSave.LibPersona5)
   Copyright (c) Xeeynamo
   https://github.com/Xeeynamo/KingdomSaveEditor
-  The compendium offsets (0x41D8, 464 × 48-byte entries) and the
-  persona ID → name lookup table (companion/Resources/persona-ids.txt,
-  copied from KHSave.LibPersona5/Resources/Persona5/Royal_Demon.txt)
-  are from KHSave.LibPersona5.
+  Licensed under the MIT License.
+  The persona ID lookup table used by the companion save reader
+  (companion/Resources/persona-ids.txt) is adapted from this project.
 
 The Apache License 2.0 text is included in the LICENSE file in this repository.

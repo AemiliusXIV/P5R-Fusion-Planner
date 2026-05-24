@@ -193,17 +193,15 @@ Copyright notices for works incorporated into this project:
    fiber-saveutil
    Copyright (c) zarroboogs
    https://github.com/zarroboogs/fiber-saveutil
-   AES decryption logic in the companion save reader is ported from
-   this project.
+   Licensed under the Apache License, Version 2.0.
 
-   KingdomSaveEditor
+   KingdomSaveEditor (KHSave.LibPersona5)
    Copyright (c) Xeeynamo
    https://github.com/Xeeynamo/KingdomSaveEditor
-   Compendium offsets and the persona ID lookup table used by the
-   companion save reader are from KHSave.LibPersona5.
+   Licensed under the MIT License.
 
-   All of the above projects are licensed under the Apache License,
-   Version 2.0. You may obtain a copy at
+   persona-fusion-calculator and persona5_calculator are licensed under the
+   Apache License, Version 2.0. You may obtain a copy at
    http://www.apache.org/licenses/LICENSE-2.0
 
 ---
