@@ -116,12 +116,14 @@ public partial class MainWindow : Window
                               $"Lv {contents.Level}.";
 
             OpenButton.IsEnabled = true;
+            CopyLinkButton.IsEnabled = true;
             SaveJsonButton.IsEnabled = true;
         }
         catch (Exception ex)
         {
             StatusText.Text = $"Failed: {ex.Message}";
             OpenButton.IsEnabled = false;
+            CopyLinkButton.IsEnabled = false;
             SaveJsonButton.IsEnabled = false;
             _lastGeneratedJson = null;
         }
@@ -142,6 +144,14 @@ public partial class MainWindow : Window
         {
             StatusText.Text = $"Could not open browser: {ex.Message}";
         }
+    }
+
+    private void CopyLinkButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_lastGeneratedJson == null) return;
+        var url = ImportPayload.BuildDeepLink(PwaBaseUrl, _lastGeneratedJson);
+        Clipboard.SetText(url);
+        StatusText.Text = "✓ Link copied. Paste it into your browser address bar, or use the Paste Import field on the PWA settings page.";
     }
 
     private void SaveJsonButton_Click(object sender, RoutedEventArgs e)

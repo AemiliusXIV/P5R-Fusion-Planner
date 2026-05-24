@@ -152,11 +152,15 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="8"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" x:Name="ReadButton" Content="READ SELECTED SAVE" Click="ReadButton_Click"/>
             <Button Grid.Column="2" x:Name="OpenButton" Content="OPEN IN BROWSER" Click="OpenButton_Click"
                     Style="{StaticResource GhostButton}" IsEnabled="False"/>
-            <Button Grid.Column="4" x:Name="SaveJsonButton" Content="SAVE JSON" Click="SaveJsonButton_Click"
+            <Button Grid.Column="4" x:Name="CopyLinkButton" Content="COPY LINK" Click="CopyLinkButton_Click"
+                    Style="{StaticResource GhostButton}" IsEnabled="False"/>
+            <Button Grid.Column="6" x:Name="SaveJsonButton" Content="SAVE JSON" Click="SaveJsonButton_Click"
                     Style="{StaticResource GhostButton}" IsEnabled="False"/>
         </Grid>
 

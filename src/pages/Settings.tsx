@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useStore } from '../store/useStore';
 import type { DisplaySize, ColorMode } from '../store/useStore';
 import { dlcPersona, confidantNames } from '../data/Data5Royal';
@@ -25,6 +25,9 @@ export function Settings() {
   } = useStore();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [pasteValue, setPasteValue] = useState('');
+  const [pasteStatus, setPasteStatus] = useState<'idle' | 'ok' | 'error'>('idle');
+  const [pasteMessage, setPasteMessage] = useState('');
 
   const handleExport = () => {
     const data = exportOwned();
@@ -56,6 +59,54 @@ export function Settings() {
     };
     reader.readAsText(file);
     e.target.value = '';
+  };
+
+  const handlePasteImport = () => {
+    const raw = pasteValue.trim();
+    if (!raw) return;
+    setPasteStatus('idle');
+    setPasteMessage('');
+
+    try {
+      let json: string;
+
+      if (raw.startsWith('{')) {
+        // Raw JSON pasted directly
+        json = raw;
+      } else {
+        // Either a full deep-link URL or a bare base64 string
+        let b64 = raw;
+        if (raw.startsWith('http')) {
+          const hashIndex = raw.indexOf('#');
+          const fragment = hashIndex >= 0 ? raw.slice(hashIndex + 1) : '';
+          const params = new URLSearchParams(fragment.replace(/^\/import\?/, ''));
+          b64 = params.get('data') ?? '';
+          if (!b64) throw new Error('No data parameter found in the URL.');
+        }
+        const normalised = b64.replace(/-/g, '+').replace(/_/g, '/');
+        const padded = normalised + '='.repeat((4 - normalised.length % 4) % 4);
+        const binaryStr = atob(padded);
+        const bytes = new Uint8Array(binaryStr.length);
+        for (let i = 0; i < binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
+        json = new TextDecoder('utf-8').decode(bytes);
+      }
+
+      const data = JSON.parse(json) as ImportedOwnedData;
+      if (data.version !== 1 || !data.personas || typeof data.personas !== 'object') {
+        setPasteStatus('error');
+        setPasteMessage('Unrecognised format; expected a P5R Fusion Planner export.');
+        return;
+      }
+
+      importOwned(data);
+      const count = Object.values(data.personas).filter(p => p.owned).length;
+      setPasteStatus('ok');
+      setPasteMessage(`Imported ${count} owned persona${count !== 1 ? 's' : ''}.`);
+      setPasteValue('');
+    } catch (err) {
+      setPasteStatus('error');
+      setPasteMessage(err instanceof Error ? err.message : 'Could not parse the pasted data.');
+    }
   };
 
   const ownedCount = Object.values(ownedMap).filter(s => s.owned).length;
@@ -265,6 +316,36 @@ export function Settings() {
             Import JSON
           </button>
           <input ref={fileInputRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
+        </div>
+
+        <div className="mt-5 border-t border-p5border pt-4">
+          <h3 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-1">Paste Import</h3>
+          <p className="text-xs text-gray-500 font-display mb-3">
+            Paste a link or string from the companion app. Accepts the full deep-link URL,
+            a bare base64 string, or raw JSON.
+          </p>
+          <textarea
+            value={pasteValue}
+            onChange={e => { setPasteValue(e.target.value); setPasteStatus('idle'); }}
+            placeholder="Paste link or data here..."
+            rows={3}
+            className="input-p5 w-full font-mono text-xs resize-none mb-2"
+          />
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handlePasteImport}
+              disabled={!pasteValue.trim()}
+              className="btn-ghost text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Import
+            </button>
+            {pasteStatus === 'ok' && (
+              <span className="text-xs text-green-400 font-display">✓ {pasteMessage}</span>
+            )}
+            {pasteStatus === 'error' && (
+              <span className="text-xs text-p5red font-display">{pasteMessage}</span>
+            )}
+          </div>
         </div>
       </section>
     </div>
