@@ -93,7 +93,7 @@ export const useStore = create<AppState>()(
 
       importOwned(data) {
         // 'save-file' source comes from the companion save reader. It only
-        // contains owned personas — merge so we preserve user-set wishlist
+        // contains owned personas; merge so we preserve user-set wishlist
         // and notes data. Manual exports replace the entire map.
         if (data.source === 'save-file') {
           set(state => {

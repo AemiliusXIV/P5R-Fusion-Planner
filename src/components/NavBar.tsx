@@ -9,14 +9,14 @@ const links = [
 export function NavBar() {
   return (
     <>
-      {/* Desktop sidebar — fixed viewport height so credit always shows at bottom */}
+      {/* Desktop sidebar, fixed viewport height so credit always shows at bottom */}
       <nav className="hidden md:flex flex-col w-48 shrink-0 bg-p5gray border-r border-p5border sticky top-0 h-screen overflow-hidden">
         <div className="p-4 border-b border-p5border shrink-0">
           <div className="font-display font-bold text-p5red text-xl tracking-widest uppercase">P5R</div>
           <div className="font-display text-p5white text-sm tracking-wider uppercase">Fusion</div>
         </div>
 
-        {/* Links — scrollable if ever needed */}
+        {/* Links, scrollable if ever needed */}
         <div className="flex flex-col gap-1 p-2 mt-2 overflow-y-auto flex-1">
           {links.map(l => (
             <NavLink
@@ -35,7 +35,7 @@ export function NavBar() {
           ))}
         </div>
 
-        {/* Credit — always visible at bottom of sidebar */}
+        {/* Credit, always visible at bottom of sidebar */}
         <div className="p-4 border-t border-p5border shrink-0">
           <a
             href="https://github.com/AemiliusXIV/P5RFusionCalc"

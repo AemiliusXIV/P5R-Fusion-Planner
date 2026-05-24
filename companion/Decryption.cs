@@ -28,14 +28,14 @@ namespace P5RCompanion;
 ///   0x40+ header  (may be zlib)
 ///   ...   game data  (may be zlib)
 ///
-/// Key insight: the AES key is STATIC. No Steam ID is needed — the same key
-/// decrypts every P5R PC save.
+/// Key insight: the AES key is a static value, identical in every retail
+/// copy of P5R PC. Works with any P5R PC installation; Atlus did not derive
+/// it per-account, unlike P5 Strikers.
 /// </summary>
 public static class Decryption
 {
-    // Hardcoded AES-256 key from save.py.
-    // This is the same key for every P5R PC save — Atlus did not derive it
-    // from the Steam account, unlike P5 Strikers.
+    // Static AES-256 key, public knowledge; the same value ships with every
+    // retail copy of P5R PC. Sourced from fiber-saveutil/save.py (Apache 2.0).
     private static readonly byte[] AesKey = Convert.FromBase64String(
         "3lOZS0kYSoOOtkC4c7IDfvNXnxIprUPTlUGVC3yBJF0=");
 
@@ -98,7 +98,7 @@ public static class Decryption
         var headerCompressed = (saveFlags & 1) != 0;
         var dataCompressed = (saveFlags & 2) != 0;
 
-        // Read header block (for display info only — never persisted)
+        // Read header block (for display info only, never persisted)
         var headerBytes = ExtractBlock(
             body,
             startOffset: 0x20, // DataBlockStart - HeaderEndOffset
@@ -175,7 +175,7 @@ public static class Decryption
     /// <summary>
     /// Pulls a few display-only fields from the save header so the user can
     /// pick the right slot. These values are shown in the UI and immediately
-    /// discarded — never written to JSON, never sent anywhere.
+    /// discarded; never written to JSON, never sent anywhere.
     ///
     /// Header layout (from save.py _unpack_header):
     ///   0x00  playtime  uint32

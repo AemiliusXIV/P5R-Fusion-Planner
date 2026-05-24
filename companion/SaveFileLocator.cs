@@ -30,7 +30,7 @@ public static class SaveFileLocator
         if (!Directory.Exists(steamRoot)) return null;
 
         // Each subfolder of Steam\ is a SteamID64. We pick the one with the
-        // most recently modified savedata folder — that's the active account.
+        // most recently modified savedata folder (the active account).
         var candidates = Directory.GetDirectories(steamRoot)
             .Select(dir => new
             {

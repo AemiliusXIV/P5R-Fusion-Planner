@@ -124,7 +124,7 @@ export function FusionTree({ node, depth = 0, isRoot = false }: FusionTreeProps)
       )}
 
       {(currentNode.owned || !!ownedMap[currentNode.persona]?.owned) && !isRoot && (
-        <div className="mt-1 text-[10px] text-green-400 font-display font-bold">OWNED — stop here</div>
+        <div className="mt-1 text-[10px] text-green-400 font-display font-bold">OWNED - stop here</div>
       )}
     </div>
   );

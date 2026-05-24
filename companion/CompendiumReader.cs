@@ -17,7 +17,7 @@ namespace P5RCompanion;
 /// Per-entry layout:
 ///   0x00  Flags  short   ← bit 0 set = registered in compendium
 ///   0x02  Id     short   ← persona ID (1=Metatron, 5=Jack Frost, ...)
-///   0x04+ Level, Trait, Experience, Skills, Stats — we don't read these
+///   0x04+ Level, Trait, Experience, Skills, Stats; we don't read these
 ///
 /// We only look at Flags + Id. Everything else in the save (header,
 /// money, story flags, character data, protagonist name) is ignored.
@@ -67,7 +67,7 @@ public static class CompendiumReader
 
             // Translate name if needed, otherwise use as-is.
             // Unknown personas (not in the PWA) are silently dropped at
-            // PWA import time — they just won't have a card to mark.
+            // PWA import time; they just won't have a card to mark.
             var canonicalName = NameTranslations.TryGetValue(rawName, out var translated)
                 ? translated
                 : rawName;

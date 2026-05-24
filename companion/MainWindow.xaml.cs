@@ -72,7 +72,7 @@ public partial class MainWindow : Window
         {
             StatusText.Text = "Reading save file…";
 
-            // Read bytes into memory — never opens with write access
+            // Read bytes into memory; never opens with write access
             var fileBytes = SaveFileLocator.ReadFileBytes(item.Slot.FilePath);
 
             // Decrypt & decompress (original file untouched)

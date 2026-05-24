@@ -4,16 +4,16 @@ const ELEM_LABELS = ['Phys', 'Gun', 'Fire', 'Ice', 'Elec', 'Wind', 'Psy', 'Nuke'
 
 // Element colours tuned to match P5R in-game palette
 const ELEM_HEX = [
-  '#f97316', // Phys  — orange
-  '#94a3b8', // Gun   — slate (steel/metallic blue-gray)
-  '#ef4444', // Fire  — red
-  '#60a5fa', // Ice   — blue
-  '#facc15', // Elec  — yellow
-  '#4ade80', // Wind  — green
-  '#c084fc', // Psy   — purple
-  '#22d3ee', // Nuke  — cyan/teal (corrected from pink; matches P5R in-game)
-  '#fbbf24', // Bless — amber/gold (corrected from pale yellow; actually visible)
-  '#a21caf', // Curse — deep purple
+  '#f97316', // Phys  -orange
+  '#94a3b8', // Gun   -slate (steel/metallic blue-gray)
+  '#ef4444', // Fire  -red
+  '#60a5fa', // Ice   -blue
+  '#facc15', // Elec  -yellow
+  '#4ade80', // Wind  -green
+  '#c084fc', // Psy   -purple
+  '#22d3ee', // Nuke  -cyan/teal (corrected from pink; matches P5R in-game)
+  '#fbbf24', // Bless -amber/gold (corrected from pale yellow; actually visible)
+  '#a21caf', // Curse -deep purple
 ];
 
 // Elements where bright yellow/amber background makes white text unreadable on Wk
@@ -22,16 +22,16 @@ const LIGHT_ELEMENTS = new Set([4, 8]); // Elec (yellow), Bless (amber)
 
 // Background opacity for each resistance type
 const RESIST_ALPHA: Record<ElementResist, number> = {
-  '-': 0.12, // normal — barely visible, just shows the element
-  wk:  1.00, // weak   — maximum visibility; you need to know
-  rs:  0.42, // resist — moderate
-  nu:  0.18, // null   — very dim
-  ab:  0.85, // absorb — strong (heals from it)
-  rp:  0.65, // repel  — quite visible (bounces back)
+  '-': 0.12, // normal -barely visible, just shows the element
+  wk:  1.00, // weak   -maximum visibility; you need to know
+  rs:  0.42, // resist -moderate
+  nu:  0.18, // null   -very dim
+  ab:  0.85, // absorb -strong (heals from it)
+  rp:  0.65, // repel  -quite visible (bounces back)
 };
 
 const ELEM_SHORT: Record<ElementResist, string> = {
-  wk: 'Wk', rs: 'Rs', nu: 'Nu', ab: 'Ab', rp: 'Rp', '-': '—',
+  wk: 'Wk', rs: 'Rs', nu: 'Nu', ab: 'Ab', rp: 'Rp', '-': '-',
 };
 
 const RESIST_LABEL: Record<ElementResist, string> = {
@@ -61,7 +61,7 @@ export function ResistanceBadge({ elems, compact = false }: Props) {
         const textColor = needsDarkText
           ? '#1a1a1a'
           : alpha < 0.3
-            ? hex        // dim background — use element colour as text so it's still legible
+            ? hex        // dim background -use element colour as text so it's still legible
             : '#ffffff';
 
         return (

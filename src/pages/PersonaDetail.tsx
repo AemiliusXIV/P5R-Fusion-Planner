@@ -9,8 +9,8 @@ const ELEM_LABELS = ['Phys', 'Gun', 'Fire', 'Ice', 'Elec', 'Wind', 'Psy', 'Nuke'
 const STAT_LABELS = ['STR', 'MAG', 'END', 'AGI', 'LCK'];
 
 function getSkillCost(element: string, cost?: number): string {
-  if (element === 'passive' || element === 'trait') return '—';
-  if (!cost) return '—';
+  if (element === 'passive' || element === 'trait') return '-';
+  if (!cost) return '-';
   return cost < 100 ? `${cost}% HP` : `${cost / 100} SP`;
 }
 
@@ -55,7 +55,7 @@ export function PersonaDetail() {
         level: 0,
         element: 'trait',
         effect: trait?.effect ?? '',
-        cost: '—',
+        cost: '-',
         unique: true,
       });
     }
@@ -169,13 +169,13 @@ export function PersonaDetail() {
               </span>
               <span className="font-display font-bold text-sm text-p5white flex-1">{skill.name}</span>
               <span className="text-xs text-gray-500 w-12 text-right shrink-0">{skill.cost}</span>
-              <span className="text-xs text-gray-500 w-6 text-right shrink-0 font-display">{skill.level || '—'}</span>
+              <span className="text-xs text-gray-500 w-6 text-right shrink-0 font-display">{skill.level || '-'}</span>
             </div>
           ))}
         </div>
         <div className="mt-2 flex gap-4 text-[10px] text-gray-600">
           <span>Level = learn at level</span>
-          <span>— = innate</span>
+          <span>- = innate</span>
           <span>Trait = special ability</span>
         </div>
       </div>

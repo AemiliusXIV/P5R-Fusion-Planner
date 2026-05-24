@@ -9,7 +9,7 @@ type Status = 'loading' | 'success' | 'error';
  * Deep-link import endpoint used by the companion save reader.
  * URL shape:  #/import?data=<base64-encoded JSON>
  *
- * The data parameter never leaves the browser — URL hashes are not sent to
+ * The data parameter never leaves the browser; URL hashes are not sent to
  * the GitHub Pages server. After importing, we strip the data from the URL
  * so it doesn't sit in browser history.
  */

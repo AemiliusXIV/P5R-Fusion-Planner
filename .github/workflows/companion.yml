@@ -29,8 +29,6 @@ jobs:
         run: >
           dotnet publish -c Release -r win-x64 --self-contained true
           -p:PublishSingleFile=true
-          -p:IncludeNativeLibrariesForSelfExtract=true
-          -p:EnableCompressionInSingleFile=true
           -o publish
 
       - name: Rename output
@@ -47,7 +45,7 @@ jobs:
           name: Save Reader ${{ github.ref_name }}
           prerelease: true
           body: |
-            > ⚠️ **EARLY TESTING BUILD — NOT RECOMMENDED FOR GENERAL USE**
+            > ⚠️ **EARLY TESTING BUILD - NOT RECOMMENDED FOR GENERAL USE**
             >
             > This is an early release of the save reader and has not been
             > tested against a wide range of real save files yet. Behaviour,
@@ -65,7 +63,7 @@ jobs:
             **What it does:**
             1. Auto-detects your P5R PC save folder
             2. Pick a save slot, click *Read Selected Save*
-            3. Click *Open in Browser* — the planner opens and imports
+            3. Click *Open in Browser*: the planner opens and imports
                your owned personas automatically
 
             **Privacy:**

@@ -7,9 +7,9 @@ import type { ImportedOwnedData } from '../engine/types';
 const DEPTH_DESCRIPTIONS: Record<number, string> = {
   1: 'Shows only the two direct ingredients for your target persona. Good for a quick lookup.',
   2: 'Shows ingredients and what you need to fuse each of them. Two steps total.',
-  3: 'Three layers deep — usually enough to see whether base-level personas are in the chain.',
+  3: 'Three layers deep; usually enough to see whether base-level personas are in the chain.',
   4: 'Default. Most fusion chains in P5R fully resolve at this depth. Recommended starting point.',
-  5: 'Extended depth — useful for complex personas like Yoshitsune or Satanael where chains are long.',
+  5: 'Extended depth, useful for complex personas like Yoshitsune or Satanael where chains are long.',
   6: 'Maximum depth. Can be slow for high-level personas. Use when depth 5 still leaves unknowns.',
 };
 
@@ -72,7 +72,7 @@ export function Settings() {
   ];
 
   const colorOptions: { value: ColorMode; label: string; desc: string }[] = [
-    { value: 'p5', label: 'Persona 5',    desc: 'Full colour theme — red, gold, and black.' },
+    { value: 'p5', label: 'Persona 5',    desc: 'Full colour theme: red, gold, and black.' },
     { value: 'bw', label: 'Muted Colors', desc: 'Heavily desaturated dark mode. Keeps the layout and contrast but removes most colour, for a quieter look.' },
   ];
 
@@ -249,7 +249,7 @@ export function Settings() {
           </span>
         </div>
         <p className="text-xs text-gray-500 font-display mb-3">
-          Everything — owned personas, wishlist, settings, DLC toggles — is saved automatically
+          Everything (owned personas, wishlist, settings, DLC toggles) is saved automatically
           to your browser's local storage. It persists across page refreshes and browser restarts
           as long as you don't clear site data. Use Export to back it up as a JSON file you can
           keep, or Import to restore from a backup.

@@ -5,8 +5,8 @@ import { skillMapRoyal } from '../engine/initData';
 const ALL_ELEMENTS = ['phys','gun','fire','ice','elec','wind','psy','nuke','bless','curse','almighty','ailment','support','passive','healing','trait'];
 
 function getSkillCost(element: string, cost?: number): string {
-  if (element === 'passive' || element === 'trait') return '—';
-  if (!cost) return '—';
+  if (element === 'passive' || element === 'trait') return '-';
+  if (!cost) return '-';
   return cost < 100 ? `${cost}% HP` : `${cost / 100} SP`;
 }
 

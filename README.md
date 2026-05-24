@@ -38,12 +38,12 @@ A small Windows desktop tool (in `companion/`) that reads your P5R PC save file 
 How it works:
 1. Run the tool, it auto-detects your save folder
 2. Pick a save slot, click "Read Selected Save"
-3. Click "Open in Browser" — the planner opens and imports automatically
+3. Click "Open in Browser": the planner opens and imports automatically
 
 Privacy:
 - Static AES-256 key, no Steam ID required, no account info read
 - Reads only the persona compendium (22 KB out of the 256 KB save)
-- Protagonist name, playtime, story flags, items, money — all skipped
+- Protagonist name, playtime, story flags, items, money: all skipped
 - Original save file is never opened with write access
 - All data stays on your machine; the deep-link uses a URL hash which browsers never send to servers
 
