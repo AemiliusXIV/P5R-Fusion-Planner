@@ -7,12 +7,10 @@ namespace P5RCompanion;
 /// <summary>
 /// Reads the persona compendium out of a decrypted P5R save file.
 ///
-/// Compendium location (from KingdomSaveEditor's KHSave.LibPersona5,
-/// Apache 2.0, Xeeynamo):
-///   https://github.com/Xeeynamo/KingdomSaveEditor
+/// Compendium location verified empirically against a live P5R PC save file.
 ///
 /// Within the decrypted game data block:
-///   Offset 0x41D8: 464 entries × 48 bytes (0x30 stride)
+///   Offset 0x3F40: 464 entries × 48 bytes (0x30 stride)
 ///
 /// Per-entry layout:
 ///   0x00  Flags  short   ← bit 0 set = registered in compendium
@@ -24,7 +22,7 @@ namespace P5RCompanion;
 /// </summary>
 public static class CompendiumReader
 {
-    private const int CompendiumOffset = 0x41D8;
+    private const int CompendiumOffset = 0x3F40;
     private const int EntryCount = 0x1D0;     // 464
     private const int EntryStride = 0x30;     // 48 bytes
     private const ushort RegisteredFlag = 0x0001;

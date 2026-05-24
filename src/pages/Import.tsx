@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import type { ImportedOwnedData } from '../engine/types';
@@ -22,7 +22,16 @@ export function Import() {
   const [message, setMessage] = useState('');
   const [count, setCount] = useState(0);
 
+  // Guard against the effect firing twice. React Router v7 intercepts
+  // history.replaceState calls and re-fires searchParams updates, which
+  // would re-trigger this effect and cancel the redirect timer. Running
+  // the import logic exactly once per mount avoids that entirely.
+  const didImport = useRef(false);
+
   useEffect(() => {
+    if (didImport.current) return;
+    didImport.current = true;
+
     const raw = searchParams.get('data');
     if (!raw) {
       setStatus('error');
@@ -49,10 +58,8 @@ export function Import() {
       setStatus('success');
       setMessage(`Imported ${ownedCount} owned personas from ${parsed.source === 'save-file' ? 'your save file' : 'backup'}.`);
 
-      // Strip the data from the URL so it doesn't linger in history
-      window.history.replaceState(null, '', window.location.pathname + window.location.search + '#/import');
-
-      // Auto-redirect to the persona list after a moment
+      // Redirect to the persona list; this also cleans the data param out of
+      // the URL naturally (the new hash is #/list, not #/import?data=...).
       const timer = setTimeout(() => navigate('/list', { replace: true }), 2500);
       return () => clearTimeout(timer);
     } catch {

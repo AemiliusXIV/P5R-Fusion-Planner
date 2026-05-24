@@ -167,9 +167,12 @@ export const useStore = create<AppState>()(
         colorMode: state.colorMode,
       }),
       onRehydrateStorage: () => (state) => {
+        // Rebuild the fusion engine from the rehydrated DLC settings.
+        // In Zustand v5, Object.assign on the state param does not
+        // update the store; use setState instead.
         if (state) {
           const engine = buildEngine(state.dlcEnabled ?? defaultDlcEnabled);
-          Object.assign(state, engine);
+          useStore.setState(engine);
         }
       },
     }

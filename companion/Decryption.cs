@@ -40,8 +40,7 @@ public static class Decryption
         "3lOZS0kYSoOOtkC4c7IDfvNXnxIprUPTlUGVC3yBJF0=");
 
     private const uint EncryptedFlag = 0x80000000;
-    private const int HeaderEndOffset = 0x20;
-    private const int DataBlockStart = 0x40;
+    private const int FileHeaderSize = 0x20;
 
     public class SaveContents
     {
@@ -64,7 +63,7 @@ public static class Decryption
     /// </summary>
     public static SaveContents Read(byte[] fileBytes)
     {
-        if (fileBytes.Length < HeaderEndOffset + 16)
+        if (fileBytes.Length < FileHeaderSize + 16)
             throw new InvalidDataException("Save file too small to be valid.");
 
         // Read file header
@@ -80,12 +79,12 @@ public static class Decryption
         byte[] body;
         if ((flags & EncryptedFlag) != 0)
         {
-            body = DecryptAes(fileBytes, HeaderEndOffset, iv);
+            body = DecryptAes(fileBytes, FileHeaderSize, iv);
         }
         else
         {
-            body = new byte[fileBytes.Length - HeaderEndOffset];
-            Array.Copy(fileBytes, HeaderEndOffset, body, 0, body.Length);
+            body = new byte[fileBytes.Length - FileHeaderSize];
+            Array.Copy(fileBytes, FileHeaderSize, body, 0, body.Length);
         }
 
         // Inner header (offsets relative to start of decrypted body)
@@ -98,19 +97,23 @@ public static class Decryption
         var headerCompressed = (saveFlags & 1) != 0;
         var dataCompressed = (saveFlags & 2) != 0;
 
+        // headerSizeComp stores an encoded value with a 0x40 bias when compressed;
+        // subtract it to get the actual byte count on disk.
+        // dataSizeComp is already the true byte count, no bias applied.
+        var headerActualComp = headerCompressed ? (uint)(headerSizeComp - 0x40) : headerSize;
+
         // Read header block (for display info only, never persisted)
         var headerBytes = ExtractBlock(
             body,
-            startOffset: 0x20, // DataBlockStart - HeaderEndOffset
+            startOffset: 0x20,
             rawSize: headerSize,
-            compSize: headerSizeComp,
+            compSize: headerActualComp,
             compressed: headerCompressed);
 
         var (calendarDay, playtime, level) = ParseHeaderDisplayInfo(headerBytes);
 
-        // Skip past the header to find the data block. Aligned to 16 bytes.
-        var headerEnd = 0x20 + (headerCompressed ? headerSizeComp : headerSize);
-        var dataStart = AlignUp(headerEnd, 16);
+        // Skip past the header block to find the data block. Aligned to 16 bytes.
+        var dataStart = AlignUp(0x20 + (int)headerActualComp, 16);
 
         var dataBytes = ExtractBlock(
             body,
@@ -147,11 +150,9 @@ public static class Decryption
     {
         if (compressed)
         {
-            // zlib-compressed: the compressed size includes the 0x40 header offset
-            // in fiber-saveutil's code; here we're already past the inner header
-            // start of 0x20, so compSize accounts for the position from start of
-            // body (offset 0). Length of actual compressed bytes:
-            var compLength = (int)(compSize - 0x40);
+            // Caller is responsible for passing the true byte count (any encoding
+            // bias has already been stripped before this call).
+            var compLength = (int)compSize;
             if (startOffset + compLength > body.Length)
                 throw new InvalidDataException("Compressed block extends past end of file.");
 
@@ -188,7 +189,9 @@ public static class Decryption
     private static (ushort day, uint playtime, byte level) ParseHeaderDisplayInfo(byte[] header)
     {
         if (header.Length < 0x10) return (0, 0, 0);
-        var playtime = BitConverter.ToUInt32(header, 0);
+        // Playtime is a frame counter running at 30fps; divide to get seconds.
+        var playtimeFrames = BitConverter.ToUInt32(header, 0);
+        var playtime = playtimeFrames / 30u;
         var day = BitConverter.ToUInt16(header, 4);
         var level = header[9];
         return (day, playtime, level);
