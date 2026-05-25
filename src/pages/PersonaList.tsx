@@ -178,6 +178,7 @@ export function PersonaList() {
 
           <button
             onClick={() => setShowOwnedOnly(!showOwnedOnly)}
+            aria-pressed={showOwnedOnly}
             className={`px-3 py-2 text-xs font-display font-bold tracking-wider uppercase border transition-colors ${showOwnedOnly ? 'border-green-500 text-green-400 bg-green-950' : 'border-p5border text-gray-500 hover:border-green-500'}`}
           >
             Owned only
@@ -185,6 +186,7 @@ export function PersonaList() {
 
           <button
             onClick={() => setShowWishlistOnly(!showWishlistOnly)}
+            aria-pressed={showWishlistOnly}
             className={`px-3 py-2 text-xs font-display font-bold tracking-wider uppercase border transition-colors ${showWishlistOnly ? 'border-p5gold text-p5gold bg-yellow-950' : 'border-p5border text-gray-500 hover:border-p5gold'}`}
           >
             Wishlist only
@@ -192,6 +194,7 @@ export function PersonaList() {
 
           <button
             onClick={() => setShowFuseableOnly(!showFuseableOnly)}
+            aria-pressed={showFuseableOnly}
             className={`px-3 py-2 text-xs font-display font-bold tracking-wider uppercase border transition-colors ${showFuseableOnly ? 'border-sky-500 text-sky-400 bg-sky-950/20' : 'border-p5border text-gray-500 hover:border-sky-500'}`}
           >
             Fuseable now

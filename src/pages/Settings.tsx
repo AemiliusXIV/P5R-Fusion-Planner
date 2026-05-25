@@ -25,6 +25,8 @@ export function Settings() {
   } = useStore();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [fileStatus, setFileStatus] = useState<'idle' | 'ok' | 'error'>('idle');
+  const [fileMessage, setFileMessage] = useState('');
   const [pasteValue, setPasteValue] = useState('');
   const [pasteStatus, setPasteStatus] = useState<'idle' | 'ok' | 'error'>('idle');
   const [pasteMessage, setPasteMessage] = useState('');
@@ -43,18 +45,24 @@ export function Settings() {
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setFileStatus('idle');
+    setFileMessage('');
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
         const data = JSON.parse(ev.target?.result as string) as ImportedOwnedData;
         if (data.version !== 1 || !data.personas) {
-          alert('Invalid import file format.');
+          setFileStatus('error');
+          setFileMessage('Invalid import file format.');
           return;
         }
         importOwned(data);
-        alert(`Imported ${Object.keys(data.personas).length} personas.`);
+        const count = Object.keys(data.personas).length;
+        setFileStatus('ok');
+        setFileMessage(`Imported ${count} persona${count !== 1 ? 's' : ''}.`);
       } catch {
-        alert('Failed to parse import file.');
+        setFileStatus('error');
+        setFileMessage('Could not parse the file. Make sure it is a valid P5R Fusion Planner export.');
       }
     };
     reader.readAsText(file);
@@ -308,14 +316,23 @@ export function Settings() {
         <div className="text-sm text-gray-400 font-display mb-4">
           {ownedCount} owned · {wishlistCount} wishlisted
         </div>
-        <div className="flex gap-3 flex-wrap">
+        <div className="flex gap-3 flex-wrap items-center">
           <button onClick={handleExport} className="btn-ghost text-sm">
             Export JSON
           </button>
-          <button onClick={() => fileInputRef.current?.click()} className="btn-ghost text-sm">
+          <button
+            onClick={() => { setFileStatus('idle'); fileInputRef.current?.click(); }}
+            className="btn-ghost text-sm"
+          >
             Import JSON
           </button>
           <input ref={fileInputRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
+          {fileStatus === 'ok' && (
+            <span className="text-xs text-green-400 font-display">✓ {fileMessage}</span>
+          )}
+          {fileStatus === 'error' && (
+            <span className="text-xs text-p5red font-display">{fileMessage}</span>
+          )}
         </div>
 
         <div className="mt-5 border-t border-p5border pt-4">

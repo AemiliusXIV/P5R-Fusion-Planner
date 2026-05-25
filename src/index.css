@@ -4,7 +4,8 @@
 
 @layer base {
   html, body {
-    @apply bg-p5black text-p5white;
+    background-color: theme('colors.p5black');
+    color: theme('colors.p5white');
     font-family: 'Inter', sans-serif;
   }
 

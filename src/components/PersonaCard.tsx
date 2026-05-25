@@ -64,13 +64,15 @@ export function PersonaCard({ persona }: Props) {
       {/* Actions */}
       <div className="flex gap-2 mt-1">
         <button
-          onClick={(e) => { e.preventDefault(); setOwned(persona.name, { owned: !isOwned, wishlist: isOwned ? false : isWishlist }); }}
+          onClick={(e) => { e.preventDefault(); setOwned(persona.name, { owned: !isOwned }); }}
+          aria-pressed={isOwned}
           className={`flex-1 text-xs font-display font-bold tracking-wider uppercase py-1 transition-colors border ${isOwned ? 'border-green-500 text-green-400 bg-green-950' : 'border-p5border text-gray-500 hover:border-green-500 hover:text-green-400'}`}
         >
           {isOwned ? '✓ Owned' : 'Own'}
         </button>
         <button
           onClick={(e) => { e.preventDefault(); setOwned(persona.name, { wishlist: !isWishlist }); }}
+          aria-pressed={isWishlist}
           className={`flex-1 text-xs font-display font-bold tracking-wider uppercase py-1 transition-colors border ${isWishlist ? 'border-p5gold text-p5gold bg-yellow-950' : 'border-p5border text-gray-500 hover:border-p5gold hover:text-p5gold'}`}
         >
           {isWishlist ? '★ Listed' : 'Wishlist'}

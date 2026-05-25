@@ -4,15 +4,10 @@ import { useStore } from '../store/useStore';
 import { ArcanaIcon } from '../components/ArcanaIcon';
 import { ResistanceBadge } from '../components/ResistanceBadge';
 import { skillMapRoyal } from '../engine/initData';
+import { getSkillCost, elemColor } from '../utils/skillUtils';
 
 const ELEM_LABELS = ['Phys', 'Gun', 'Fire', 'Ice', 'Elec', 'Wind', 'Psy', 'Nuke', 'Bless', 'Curse'];
 const STAT_LABELS = ['STR', 'MAG', 'END', 'AGI', 'LCK'];
-
-function getSkillCost(element: string, cost?: number): string {
-  if (element === 'passive' || element === 'trait') return '-';
-  if (!cost) return '-';
-  return cost < 100 ? `${cost}% HP` : `${cost / 100} SP`;
-}
 
 export function PersonaDetail() {
   const { name } = useParams<{ name: string }>();
@@ -88,15 +83,6 @@ export function PersonaDetail() {
     );
   }
 
-  const elemColor: Record<string, string> = {
-    phys: 'text-orange-400', gun: 'text-slate-400', fire: 'text-red-400',
-    ice: 'text-blue-400', elec: 'text-yellow-400', wind: 'text-green-400',
-    psy: 'text-purple-400', nuke: 'text-cyan-400', bless: 'text-amber-400',
-    curse: 'text-purple-500', almighty: 'text-red-300', ailment: 'text-teal-400',
-    support: 'text-sky-400', passive: 'text-gray-500', healing: 'text-emerald-400',
-    trait: 'text-p5gold',
-  };
-
   return (
     <div className="flex flex-col gap-6 p-4 pb-20 md:pb-4 max-w-4xl">
       {/* Back */}
@@ -115,12 +101,14 @@ export function PersonaDetail() {
           <div className="flex gap-2">
             <button
               onClick={() => setOwned(decodedName, { owned: !isOwned })}
+              aria-pressed={isOwned}
               className={`btn-ghost text-sm ${isOwned ? '!border-green-500 !text-green-400' : ''}`}
             >
               {isOwned ? '✓ Owned' : 'Mark Owned'}
             </button>
             <button
               onClick={() => setOwned(decodedName, { wishlist: !isWishlist })}
+              aria-pressed={isWishlist}
               className={`btn-ghost text-sm ${isWishlist ? '!border-p5gold !text-p5gold' : ''}`}
             >
               {isWishlist ? '★ Wishlisted' : 'Wishlist'}
