@@ -20,6 +20,7 @@ interface SettingsState {
 
 interface AppState extends SettingsState {
   ownedMap: OwnedMap;
+  lastImportedAt: number | null;
   nameFilter: string;
   ingredientFilter: string;
   arcanaFilter: string;
@@ -68,6 +69,7 @@ export const useStore = create<AppState>()(
   persist(
     (set, get) => ({
       ownedMap: {},
+      lastImportedAt: null,
       nameFilter: '',
       ingredientFilter: '',
       arcanaFilter: '',
@@ -98,6 +100,7 @@ export const useStore = create<AppState>()(
         // 'save-file' source comes from the companion save reader. It only
         // contains owned personas; merge so we preserve user-set wishlist
         // and notes data. Manual exports replace the entire map.
+        const now = Date.now();
         if (data.source === 'save-file') {
           set(state => {
             const merged: OwnedMap = { ...state.ownedMap };
@@ -105,10 +108,10 @@ export const useStore = create<AppState>()(
               const existing = merged[name] ?? { owned: false, wishlist: false, notes: '' };
               merged[name] = { ...existing, ...patch };
             }
-            return { ownedMap: merged };
+            return { ownedMap: merged, lastImportedAt: now };
           });
         } else {
-          set({ ownedMap: data.personas });
+          set({ ownedMap: data.personas, lastImportedAt: now });
         }
       },
 
@@ -168,6 +171,7 @@ export const useStore = create<AppState>()(
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         ownedMap: state.ownedMap,
+        lastImportedAt: state.lastImportedAt,
         dlcEnabled: state.dlcEnabled,
         maxedConfidants: state.maxedConfidants,
         fusionTreeDepth: state.fusionTreeDepth,

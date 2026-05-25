@@ -22,7 +22,15 @@ export function Settings() {
     colorMode, setColorMode,
     exportOwned, importOwned,
     ownedMap,
+    lastImportedAt,
   } = useStore();
+
+  const lastImportedDisplay = lastImportedAt
+    ? new Date(lastImportedAt).toLocaleString(undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      })
+    : 'Never';
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileStatus, setFileStatus] = useState<'idle' | 'ok' | 'error'>('idle');
@@ -299,6 +307,23 @@ export function Settings() {
         </div>
       </section>
 
+      {/* ── Companion app ── */}
+      <section className="card-p5 p-4">
+        <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-1">Companion App</h2>
+        <p className="text-xs text-gray-500 font-display mb-3">
+          The companion app reads your P5R save file directly and populates your owned persona
+          list automatically — no manual toggling needed. Runs on Windows alongside the game.
+        </p>
+        <a
+          href="https://github.com/AemiliusXIV/P5RFusionCalc/releases"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-ghost text-sm inline-block"
+        >
+          Download on GitHub ↗
+        </a>
+      </section>
+
       {/* ── Owned data ── */}
       <section className="card-p5 p-4">
         <div className="flex items-center gap-3 mb-1">
@@ -313,8 +338,11 @@ export function Settings() {
           as long as you don't clear site data. Use Export to back it up as a JSON file you can
           keep, or Import to restore from a backup.
         </p>
-        <div className="text-sm text-gray-400 font-display mb-4">
+        <div className="text-sm text-gray-400 font-display mb-1">
           {ownedCount} owned · {wishlistCount} wishlisted
+        </div>
+        <div className="text-xs text-gray-500 font-display mb-4">
+          Last import: {lastImportedDisplay}
         </div>
         <div className="flex gap-3 flex-wrap items-center">
           <button onClick={handleExport} className="btn-ghost text-sm">
