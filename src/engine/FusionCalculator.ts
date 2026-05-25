@@ -233,8 +233,7 @@ export class FusionCalculator {
     targetName: string,
     depthRemaining: number,
     ownedMap: OwnedMap,
-    maxedConfidants: Record<string, boolean>,
-    memo: Map<string, FusionNode> = new Map()
+    maxedConfidants: Record<string, boolean>
   ): FusionNode {
     const persona = this.personaMap[targetName];
     const level = persona?.level ?? 0;
@@ -257,8 +256,6 @@ export class FusionCalculator {
       };
     }
 
-    if (memo.has(targetName)) return memo.get(targetName)!;
-
     const recipes = this.getRecipes(persona);
     if (!recipes.length) {
       return {
@@ -267,7 +264,20 @@ export class FusionCalculator {
       };
     }
 
-    const sorted = [...recipes].sort((a, b) => a.cost - b.cost);
+    // Prefer recipes where both ingredients are already owned, then one, then neither.
+    // Within each tier, break ties by cost.
+    const ownedScore = (r: Recipe) => {
+      const aOwned = !!ownedMap[r.sources[0]?.name]?.owned;
+      const bOwned = !!ownedMap[r.sources[1]?.name]?.owned;
+      if (aOwned && bOwned) return 0;
+      if (aOwned || bOwned) return 1;
+      return 2;
+    };
+    const sorted = [...recipes].sort((a, b) => {
+      const diff = ownedScore(a) - ownedScore(b);
+      return diff !== 0 ? diff : a.cost - b.cost;
+    });
+
     const best = sorted[0];
     const [a, b] = best.sources as [PersonaRuntime, PersonaRuntime];
 
@@ -279,13 +289,12 @@ export class FusionCalculator {
       recipe: [a.name, b.name],
       alternatives,
       children: [
-        this.getRecipesDeep(a.name, depthRemaining - 1, ownedMap, maxedConfidants, memo),
-        this.getRecipesDeep(b.name, depthRemaining - 1, ownedMap, maxedConfidants, memo),
+        this.getRecipesDeep(a.name, depthRemaining - 1, ownedMap, maxedConfidants),
+        this.getRecipesDeep(b.name, depthRemaining - 1, ownedMap, maxedConfidants),
       ],
       cost: best.cost,
     };
 
-    memo.set(targetName, node);
     return node;
   }
 }
