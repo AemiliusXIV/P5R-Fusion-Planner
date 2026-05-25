@@ -103,7 +103,7 @@ export function Import() {
                 Your wishlist and notes were preserved.
               </div>
             )}
-            <div className="text-xs text-gray-600 font-display mt-2">
+            <div className="text-xs text-gray-500 font-display mt-2">
               Redirecting to your persona list…
             </div>
           </div>

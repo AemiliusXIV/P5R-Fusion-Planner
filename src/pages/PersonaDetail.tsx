@@ -129,15 +129,15 @@ export function PersonaDetail() {
       <div className="grid md:grid-cols-2 gap-4">
         {/* Stats */}
         <div className="card-p5 p-4">
-          <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-3">Stats</h2>
+          <h2 className="section-head">Stats</h2>
           <div className="flex flex-col gap-2">
             {STAT_LABELS.map((label, i) => (
               <div key={i} className="flex items-center gap-3">
-                <span className="font-display text-xs text-gray-500 w-8 uppercase">{label}</span>
+                <span className="font-display text-xs text-gray-400 w-8 uppercase">{label}</span>
                 <div className="flex-1 bg-p5border h-1.5">
                   <div className="h-full bg-p5red" style={{ width: `${(persona.stats[i] / 99) * 100}%` }} />
                 </div>
-                <span className="font-display text-p5white text-sm w-6 text-right">{persona.stats[i]}</span>
+                <span className="font-display font-bold text-p5white text-sm w-6 text-right tabular-nums">{persona.stats[i]}</span>
               </div>
             ))}
           </div>
@@ -145,19 +145,19 @@ export function PersonaDetail() {
 
         {/* Resistances */}
         <div className="card-p5 p-4">
-          <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-3">Resistances</h2>
+          <h2 className="section-head">Resistances</h2>
           <div className="grid grid-cols-5 gap-1">
             {persona.elems.map((e, i) => (
               <div key={i} className="flex flex-col items-center gap-0.5">
-                <span className="text-[10px] text-gray-600 font-display">{ELEM_LABELS[i]}</span>
+                <span className="text-[10px] text-gray-400 font-display">{ELEM_LABELS[i]}</span>
                 <ResistanceBadge elems={[e]} compact />
               </div>
             ))}
           </div>
           {persona.item && (
-            <div className="mt-4 text-xs text-gray-500 font-display">
-              <span className="text-gray-600">Item: </span>{persona.item}
-              {persona.itemr && <><span className="text-gray-600 ml-2">/ R: </span>{persona.itemr}</>}
+            <div className="mt-4 text-xs text-gray-400 font-display">
+              <span className="text-gray-500">Item: </span>{persona.item}
+              {persona.itemr && <><span className="text-gray-500 ml-2">/ R: </span>{persona.itemr}</>}
             </div>
           )}
         </div>
@@ -165,37 +165,47 @@ export function PersonaDetail() {
 
       {/* Skills */}
       <div className="card-p5 p-4">
-        <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-3">Skills</h2>
-        <div className="flex flex-col gap-1">
+        <h2 className="section-head">Skills</h2>
+        <div className="flex flex-col gap-0">
           {skills.map((skill) => (
-            <div key={skill.name} className={`flex items-center gap-3 py-1.5 border-b border-p5border last:border-0 ${skill.element === 'trait' ? 'bg-yellow-950/20' : ''}`}>
-              <span className={`font-display text-xs uppercase w-16 shrink-0 ${elemColor[skill.element] ?? 'text-gray-400'}`}>
+            <div key={skill.name} className={`flex items-start gap-3 py-1.5 border-b border-p5border last:border-0 ${skill.element === 'trait' ? 'bg-yellow-950/20' : ''}`}>
+              {/* Element tag: Rajdhani all-caps, coloured by element type */}
+              <span className={`font-display text-[10px] uppercase w-14 shrink-0 pt-0.5 ${elemColor[skill.element] ?? 'text-gray-400'}`}>
                 {skill.element}
               </span>
-              <span className="font-display font-bold text-sm text-p5white flex-1">{skill.name}</span>
-              <span className="text-xs text-gray-500 w-12 text-right shrink-0">{skill.cost}</span>
-              <span className="text-xs text-gray-500 w-6 text-right shrink-0 font-display">{skill.level || '-'}</span>
+              <div className="flex-1 min-w-0">
+                <span className="font-display font-bold text-sm text-p5white block leading-tight">{skill.name}</span>
+                {/* Effect text: Inter for readability, not Rajdhani */}
+                {skillMapRoyal[skill.name]?.effect && (
+                  <span className="text-[11px] text-gray-400 mt-0.5 block leading-snug" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    {skillMapRoyal[skill.name].effect}
+                  </span>
+                )}
+              </div>
+              <span className="text-[11px] text-gray-400 w-14 text-right shrink-0 tabular-nums pt-0.5">{skill.cost}</span>
+              <span className="text-[11px] text-gray-400 w-6 text-right shrink-0 font-display font-bold pt-0.5 tabular-nums">{skill.level || '-'}</span>
             </div>
           ))}
         </div>
-        <div className="mt-2 flex gap-4 text-[10px] text-gray-600">
-          <span>Level = learn at level</span>
+        <div className="mt-2 flex gap-4 text-[10px] text-gray-500">
+          <span>Lv = learn at level</span>
           <span>- = innate</span>
-          <span>Trait = special ability</span>
+          <span>Trait = passive special</span>
         </div>
       </div>
 
       {/* Fusion recipes */}
       {enrichedRecipes.length > 0 && (
         <div className="card-p5 p-4">
-          <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-3 flex items-center gap-2">
-            Fusion Recipes ({enrichedRecipes.length})
+          <div className="section-head mb-3">
+            Fusion Recipes
+            <span className="text-gray-500 font-normal tracking-normal normal-case text-xs ml-1">({enrichedRecipes.length})</span>
             {readyCount > 0 && (
-              <span className="text-green-400 text-xs font-display font-bold normal-case tracking-normal">
-                · {readyCount} ready to fuse
+              <span className="text-green-400 text-xs font-display font-bold normal-case tracking-normal ml-1">
+                · {readyCount} ready
               </span>
             )}
-          </h2>
+          </div>
           <div className="flex flex-col gap-1 max-h-64 overflow-y-auto scrollbar-thin">
             {enrichedRecipes.slice(0, 50).map((r, i) => (
               <div
@@ -206,7 +216,7 @@ export function PersonaDetail() {
                   const srcOwned = !!ownedMap[src.name]?.owned;
                   return (
                     <span key={si} className="flex items-center gap-2">
-                      {si > 0 && <span className="text-gray-600 font-display">+</span>}
+                      {si > 0 && <span className="text-gray-500 font-display">+</span>}
                       <Link
                         to={`/persona/${encodeURIComponent(src.name)}`}
                         className={`hover:text-p5red transition-colors font-display ${srcOwned ? 'text-green-400' : 'text-p5white'}`}
@@ -220,12 +230,12 @@ export function PersonaDetail() {
                   {r.ready && (
                     <span className="text-[10px] text-green-400 font-display font-bold uppercase">✓ Ready</span>
                   )}
-                  <span className="text-xs text-gray-600 font-display">¥{r.cost.toLocaleString()}</span>
+                  <span className="text-xs text-gray-500 font-display tabular-nums">¥{r.cost.toLocaleString()}</span>
                 </span>
               </div>
             ))}
             {enrichedRecipes.length > 50 && (
-              <div className="text-xs text-gray-600 font-display py-2">…and {enrichedRecipes.length - 50} more</div>
+              <div className="text-xs text-gray-500 font-display py-2">…and {enrichedRecipes.length - 50} more</div>
             )}
           </div>
         </div>
@@ -234,23 +244,24 @@ export function PersonaDetail() {
       {/* Reverse lookup */}
       {reverseRecipes.length > 0 && (
         <div className="card-p5 p-4">
-          <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-3">
-            Fuses Into ({reverseRecipes.length} results)
-          </h2>
+          <div className="section-head mb-3">
+            Fuses Into
+            <span className="text-gray-500 font-normal tracking-normal normal-case text-xs ml-1">({reverseRecipes.length} results)</span>
+          </div>
           <div className="flex flex-col gap-1 max-h-48 overflow-y-auto scrollbar-thin">
             {reverseRecipes.slice(0, 40).map((r, i) => (
               <div key={i} className="flex items-center gap-2 py-1 border-b border-p5border last:border-0 text-sm">
                 <Link to={`/persona/${encodeURIComponent(r.result.name)}`} className="text-p5gold hover:text-p5red transition-colors font-display font-bold flex-1">
                   {r.result.name}
                 </Link>
-                <span className="text-xs text-gray-600">via</span>
+                <span className="text-xs text-gray-500">via</span>
                 <Link to={`/persona/${encodeURIComponent(r.sources[1]?.name ?? '')}`} className="text-p5white hover:text-p5red transition-colors font-display text-xs">
                   + {r.sources[1]?.name}
                 </Link>
               </div>
             ))}
             {reverseRecipes.length > 40 && (
-              <div className="text-xs text-gray-600 font-display py-2">…and {reverseRecipes.length - 40} more</div>
+              <div className="text-xs text-gray-500 font-display py-2">…and {reverseRecipes.length - 40} more</div>
             )}
           </div>
         </div>

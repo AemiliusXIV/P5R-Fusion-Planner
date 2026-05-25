@@ -15,6 +15,7 @@ interface SettingsState {
   fusionTreeDepth: number;
   displaySize: DisplaySize;
   colorMode: ColorMode;
+  completedStrengthRequests: Record<number, boolean>;
 }
 
 interface AppState extends SettingsState {
@@ -41,6 +42,7 @@ interface AppState extends SettingsState {
   setFusionTreeDepth(depth: number): void;
   setDisplaySize(v: DisplaySize): void;
   setColorMode(v: ColorMode): void;
+  setStrengthComplete(rank: number, complete: boolean): void;
 
   setNameFilter(v: string): void;
   setIngredientFilter(v: string): void;
@@ -76,6 +78,7 @@ export const useStore = create<AppState>()(
       fusionTreeDepth: 4,
       displaySize: 'normal',
       colorMode: 'p5',
+      completedStrengthRequests: {},
 
       ...initialEngine,
 
@@ -144,6 +147,11 @@ export const useStore = create<AppState>()(
 
       setDisplaySize(v) { set({ displaySize: v }); },
       setColorMode(v) { set({ colorMode: v }); },
+      setStrengthComplete(rank, complete) {
+        set(state => ({
+          completedStrengthRequests: { ...state.completedStrengthRequests, [rank]: complete },
+        }));
+      },
 
       setNameFilter(v) { set({ nameFilter: v }); },
       setIngredientFilter(v) { set({ ingredientFilter: v }); },
@@ -165,6 +173,7 @@ export const useStore = create<AppState>()(
         fusionTreeDepth: state.fusionTreeDepth,
         displaySize: state.displaySize,
         colorMode: state.colorMode,
+        completedStrengthRequests: state.completedStrengthRequests,
       }),
       onRehydrateStorage: () => (state) => {
         // Rebuild the fusion engine from the rehydrated DLC settings.

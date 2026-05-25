@@ -163,7 +163,7 @@ export function Settings() {
                 <span className={`font-display font-bold text-sm ${displaySize === opt.value ? 'text-p5white' : 'text-gray-400 group-hover:text-p5white'} transition-colors`}>
                   {opt.label}
                 </span>
-                <p className="text-xs text-gray-600 mt-0.5">{opt.desc}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{opt.desc}</p>
               </div>
             </label>
           ))}
@@ -189,7 +189,7 @@ export function Settings() {
                   <span className={`font-display font-bold text-sm ${colorMode === opt.value ? 'text-p5white' : 'text-gray-400 group-hover:text-p5white'} transition-colors`}>
                     {opt.label}
                   </span>
-                  <p className="text-xs text-gray-600 mt-0.5">{opt.desc}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{opt.desc}</p>
                 </div>
               </label>
             ))}
@@ -223,7 +223,7 @@ export function Settings() {
             <button
               key={d}
               onClick={() => setFusionTreeDepth(d)}
-              className={`text-xs font-display font-bold py-1 border transition-colors ${fusionTreeDepth === d ? 'border-p5red text-p5red bg-red-950/30' : 'border-p5border text-gray-600 hover:border-p5red hover:text-p5red'}`}
+              className={`text-xs font-display font-bold py-1 border transition-colors ${fusionTreeDepth === d ? 'border-p5red text-p5red bg-red-950/30' : 'border-p5border text-gray-500 hover:border-p5red hover:text-p5red'}`}
             >
               {d}
             </button>

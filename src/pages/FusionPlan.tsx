@@ -1,7 +1,9 @@
-import { useParams, Link } from 'react-router-dom';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useStore } from '../store/useStore';
+import { skillMapRoyal } from '../engine/initData';
 import { FusionTree } from '../components/FusionTree';
+import { elemColor } from '../utils/skillUtils';
 import type { FusionNode } from '../engine/types';
 
 // Walk the frozen tree to count fusions still needed and identify base personas.
@@ -19,13 +21,23 @@ function walkTree(node: FusionNode, sessionOwned: Set<string>): { fusions: numbe
 
 export function FusionPlan() {
   const { name } = useParams<{ name: string }>();
+  const [searchParams] = useSearchParams();
   const decodedName = name ? decodeURIComponent(name) : '';
+  const requiredSkill = searchParams.get('skill') ?? undefined;
   const {
     personaMap, calculator, ownedMap, maxedConfidants,
     fusionTreeDepth, setFusionTreeDepth, setOwned,
   } = useStore();
 
   const persona = personaMap[decodedName];
+
+  // Personas that naturally learn the required skill (used to highlight nodes).
+  const skillSources = useMemo<Set<string> | undefined>(() => {
+    if (!requiredSkill) return undefined;
+    const skill = skillMapRoyal[requiredSkill];
+    if (!skill?.personas) return new Set();
+    return new Set(Object.keys(skill.personas));
+  }, [requiredSkill]);
 
   // Ref so computeTree always reads the latest ownedMap without being
   // listed as a dependency (which would recompute on every owned change).
@@ -89,7 +101,18 @@ export function FusionPlan() {
         <div className="w-1 h-8 bg-p5red" />
         <div>
           <h1 className="font-display font-bold text-2xl text-p5white tracking-wider">Fusion Chain</h1>
-          <p className="text-gray-500 text-sm font-display">{decodedName}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-gray-500 text-sm font-display">{decodedName}</p>
+            {requiredSkill && (() => {
+              const skill = skillMapRoyal[requiredSkill];
+              const color = skill ? (elemColor[skill.element] ?? 'text-gray-400') : 'text-gray-400';
+              return (
+                <span className={`text-xs font-display font-bold uppercase tracking-wider px-1.5 py-0.5 border border-current ${color}`}>
+                  {requiredSkill}
+                </span>
+              );
+            })()}
+          </div>
         </div>
         <div className="ml-auto flex items-center gap-3 flex-wrap">
           <label className="text-xs text-gray-500 font-display uppercase tracking-wider">Depth</label>
@@ -109,25 +132,30 @@ export function FusionPlan() {
       </div>
 
       {/* Legend */}
-      <div className="flex gap-4 text-xs font-display text-gray-500 flex-wrap">
+      <div className="flex gap-4 text-xs font-display text-gray-400 flex-wrap">
         <span className="flex items-center gap-1">
-          <span className="w-3 h-3 border-l-2 border-green-500 inline-block" /> Owned
+          <span className="w-3 h-3 border-l-4 border-green-500 inline-block" /> Owned
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-3 h-3 border-l-2 border-amber-400 inline-block" /> Ready to fuse
+          <span className="w-3 h-3 border-l-4 border-amber-400 inline-block" /> Ready to fuse
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-3 h-3 border-l-2 border-yellow-500 inline-block" /> Confidant locked
+          <span className="w-3 h-3 border-l-4 border-yellow-500 inline-block" /> Confidant locked
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-3 h-3 border-l-2 border-p5red inline-block" /> Unowned
+          <span className="w-3 h-3 border-l-4 border-p5red inline-block" /> Unowned
         </span>
-        <span className="text-gray-600">Swap recipes using the dropdown on each node.</span>
+        {requiredSkill && (
+          <span className="flex items-center gap-1">
+            <span className="w-3 h-3 border-l-4 border-sky-400 inline-block" /> Has {requiredSkill}
+          </span>
+        )}
+        <span className="text-gray-500">Swap recipes via the dropdown on each node.</span>
       </div>
 
       {/* Acquisition summary */}
       {summary && summary.fusions > 0 && (
-        <div className="bg-p5card border border-p5border p-3 text-xs font-display text-gray-400">
+        <div className="bg-p5card border-l-4 border-p5red p-3 text-xs font-display text-gray-400" style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)' }}>
           <span className="text-p5white font-bold">
             {summary.fusions} fusion{summary.fusions !== 1 ? 's' : ''} needed.
           </span>
@@ -155,6 +183,8 @@ export function FusionPlan() {
               isRoot
               sessionOwned={sessionOwned}
               onMarkDone={handleMarkDone}
+              requiredSkill={requiredSkill}
+              skillSources={skillSources}
             />
           </div>
         </div>

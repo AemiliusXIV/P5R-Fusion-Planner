@@ -210,7 +210,7 @@ export function PersonaList() {
                 setShowWishlistOnly(false);
                 setShowFuseableOnly(false);
               }}
-              className="px-3 py-2 text-xs font-display font-bold tracking-wider uppercase border border-p5border text-gray-600 hover:border-p5red hover:text-p5red transition-colors ml-auto"
+              className="px-3 py-2 text-xs font-display font-bold tracking-wider uppercase border border-p5border text-gray-500 hover:border-p5red hover:text-p5red transition-colors ml-auto"
             >
               Clear filters
             </button>
@@ -225,14 +225,14 @@ export function PersonaList() {
                 <span className="text-p5white font-bold">{ingredientData.matched}</span>
                 <button
                   onClick={() => setIngredientFilter('')}
-                  className="text-gray-600 hover:text-p5red transition-colors ml-0.5"
+                  className="text-gray-500 hover:text-p5red transition-colors ml-0.5"
                   aria-label="Clear ingredient filter"
                 >
                   ×
                 </button>
               </span>
             ) : (
-              <span className="text-xs text-gray-600 font-display">
+              <span className="text-xs text-gray-500 font-display">
                 No persona matching &ldquo;{ingredientFilter.trim()}&rdquo;
               </span>
             )}
@@ -256,7 +256,7 @@ export function PersonaList() {
           </div>
           <div ref={sentinelRef} className="h-1" />
           {hasMore && (
-            <div className="text-center text-gray-600 text-xs font-display py-2 tracking-wider">
+            <div className="text-center text-gray-500 text-xs font-display py-2 tracking-wider">
               {visible.length} / {filtered.length}
             </div>
           )}

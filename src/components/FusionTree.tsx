@@ -10,9 +10,11 @@ interface NodeCardProps {
   onMarkDone: (name: string) => void;
   sessionOwned: Set<string>;
   isRoot?: boolean;
+  requiredSkill?: string;
+  skillSources?: Set<string>;
 }
 
-function NodeCard({ node, onSwapRecipe, onMarkDone, sessionOwned, isRoot }: NodeCardProps) {
+function NodeCard({ node, onSwapRecipe, onMarkDone, sessionOwned, isRoot, requiredSkill, skillSources }: NodeCardProps) {
   const { ownedMap } = useStore();
   const isOwnedNow = node.owned || sessionOwned.has(node.persona) || !!ownedMap[node.persona]?.owned;
   const wishlist = !isOwnedNow && !!ownedMap[node.persona]?.wishlist;
@@ -25,12 +27,12 @@ function NodeCard({ node, onSwapRecipe, onMarkDone, sessionOwned, isRoot }: Node
   const readyToFuse = !isOwnedNow && !!node.children && ingAOwned && ingBOwned;
 
   const statusClass = isOwnedNow
-    ? 'border-l-2 border-green-500 bg-green-950/30'
+    ? 'border-l-4 border-green-500 bg-green-950/30'
     : readyToFuse
-    ? 'border-l-2 border-amber-400 bg-amber-950/20'
+    ? 'border-l-4 border-amber-400 bg-amber-950/20'
     : node.locked
-    ? 'border-l-2 border-yellow-500 bg-yellow-950/20'
-    : 'border-l-2 border-p5red bg-p5card';
+    ? 'border-l-4 border-yellow-500 bg-yellow-950/20'
+    : 'border-l-4 border-p5red bg-p5card';
 
   // Sort alternatives owned-first so the most achievable recipes surface at the top.
   const sortedAlts = [...node.alternatives].sort((a, b) => {
@@ -62,13 +64,18 @@ function NodeCard({ node, onSwapRecipe, onMarkDone, sessionOwned, isRoot }: Node
       >
         {node.persona}
       </Link>
-      <div className="text-[11px] text-gray-500 font-display">Lv {node.level}</div>
+      <div className="text-[11px] text-gray-400 font-display tabular-nums">Lv {node.level}</div>
 
       {isOwnedNow && (
         <div className="text-[10px] text-green-400 font-display font-bold uppercase mt-1">✓ Owned</div>
       )}
       {wishlist && (
         <div className="text-[10px] text-p5gold font-display font-bold uppercase mt-1">★ Wishlist</div>
+      )}
+      {requiredSkill && skillSources?.has(node.persona) && (
+        <div className="text-[10px] text-sky-400 font-display font-bold uppercase mt-1">
+          ⚡ Has {requiredSkill}
+        </div>
       )}
       {node.locked && (
         <div
@@ -119,9 +126,11 @@ interface FusionTreeProps {
   isRoot?: boolean;
   sessionOwned: Set<string>;
   onMarkDone: (name: string) => void;
+  requiredSkill?: string;
+  skillSources?: Set<string>;
 }
 
-export function FusionTree({ node, depth = 0, isRoot = false, sessionOwned, onMarkDone }: FusionTreeProps) {
+export function FusionTree({ node, depth = 0, isRoot = false, sessionOwned, onMarkDone, requiredSkill, skillSources }: FusionTreeProps) {
   const { calculator, personaMap, ownedMap, maxedConfidants, fusionTreeDepth } = useStore();
   const [currentNode, setCurrentNode] = useState(node);
 
@@ -153,6 +162,8 @@ export function FusionTree({ node, depth = 0, isRoot = false, sessionOwned, onMa
         onMarkDone={onMarkDone}
         sessionOwned={sessionOwned}
         isRoot={isRoot}
+        requiredSkill={requiredSkill}
+        skillSources={skillSources}
       />
 
       {!isLeaf && currentNode.children && (
@@ -166,6 +177,8 @@ export function FusionTree({ node, depth = 0, isRoot = false, sessionOwned, onMa
                 depth={depth + 1}
                 sessionOwned={sessionOwned}
                 onMarkDone={onMarkDone}
+                requiredSkill={requiredSkill}
+                skillSources={skillSources}
               />
             </div>
             <div className="flex flex-col items-center pt-4">
@@ -174,6 +187,8 @@ export function FusionTree({ node, depth = 0, isRoot = false, sessionOwned, onMa
                 depth={depth + 1}
                 sessionOwned={sessionOwned}
                 onMarkDone={onMarkDone}
+                requiredSkill={requiredSkill}
+                skillSources={skillSources}
               />
             </div>
           </div>

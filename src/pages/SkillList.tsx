@@ -60,26 +60,29 @@ export function SkillList() {
       <div className="flex flex-col gap-px">
         {filtered.map(skill => (
           <div key={skill.name} className="card-p5 flex items-start gap-3 px-3 py-2">
-            <span className={`font-display text-xs uppercase w-16 shrink-0 pt-0.5 ${elemColor[skill.element] ?? 'text-gray-400'}`}>
+            <span className={`font-display text-[10px] uppercase w-14 shrink-0 pt-0.5 ${elemColor[skill.element] ?? 'text-gray-400'}`}>
               {skill.element}
             </span>
             <div className="flex-1 min-w-0">
               <div className="font-display font-bold text-sm text-p5white">{skill.name}</div>
-              <div className="text-xs text-gray-500 mt-0.5 truncate">{skill.effect}</div>
+              {/* Effect: Inter for legibility; Rajdhani at this size is hard to parse */}
+              <div className="text-[11px] text-gray-400 mt-0.5 truncate" style={{ fontFamily: 'Inter, sans-serif' }}>
+                {skill.effect}
+              </div>
               {skill.personas && Object.keys(skill.personas).length > 0 && (
-                <div className="text-[10px] text-gray-600 mt-1 flex flex-wrap gap-1">
+                <div className="text-[10px] text-gray-500 mt-1 flex flex-wrap gap-1">
                   {Object.entries(skill.personas).slice(0, 5).map(([pName]) => (
                     <Link key={pName} to={`/persona/${encodeURIComponent(pName)}`} className="hover:text-p5red transition-colors">
                       {pName}
                     </Link>
                   ))}
                   {Object.keys(skill.personas).length > 5 && (
-                    <span>+{Object.keys(skill.personas).length - 5} more</span>
+                    <span className="text-gray-500">+{Object.keys(skill.personas).length - 5} more</span>
                   )}
                 </div>
               )}
             </div>
-            <span className="text-xs text-gray-600 font-display shrink-0">{skill.costDisplay}</span>
+            <span className="text-[11px] text-gray-400 font-display shrink-0 tabular-nums pt-0.5">{skill.costDisplay}</span>
           </div>
         ))}
       </div>

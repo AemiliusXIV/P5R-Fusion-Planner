@@ -1,9 +1,10 @@
 import { NavLink } from 'react-router-dom';
 
 const links = [
-  { to: '/list',     label: 'Personas' },
-  { to: '/skills',   label: 'Skills'   },
-  { to: '/settings', label: 'Settings' },
+  { to: '/list',     label: 'Personas'  },
+  { to: '/skills',   label: 'Skills'    },
+  { to: '/strength', label: 'Strength'  },
+  { to: '/settings', label: 'Settings'  },
 ];
 
 export function NavBar() {
@@ -11,22 +12,27 @@ export function NavBar() {
     <>
       {/* Desktop sidebar, fixed viewport height so credit always shows at bottom */}
       <nav className="hidden md:flex flex-col w-48 shrink-0 bg-p5gray border-r border-p5border sticky top-0 h-screen overflow-hidden">
+        {/* Title block: diagonal-clipped P5-style branding */}
         <div className="p-4 border-b border-p5border shrink-0">
-          <div className="font-display font-bold text-p5red text-xl tracking-widest uppercase">P5R</div>
-          <div className="font-display text-p5white text-sm tracking-wider uppercase">Fusion</div>
+          <div className="flex items-end gap-2">
+            <div>
+              <div className="font-display font-bold text-p5red text-2xl tracking-widest uppercase leading-none">P5R</div>
+              <div className="font-display text-gray-400 text-[10px] tracking-widest uppercase mt-0.5">Fusion Planner</div>
+            </div>
+          </div>
         </div>
 
-        {/* Links, scrollable if ever needed */}
-        <div className="flex flex-col gap-1 p-2 mt-2 overflow-y-auto flex-1">
+        {/* Links */}
+        <div className="flex flex-col gap-0.5 p-2 mt-2 overflow-y-auto flex-1">
           {links.map(l => (
             <NavLink
               key={l.to}
               to={l.to}
               className={({ isActive }) =>
-                `font-display font-bold tracking-widest uppercase px-4 py-2.5 text-sm transition-colors ${
+                `font-display font-bold tracking-widest uppercase pr-4 py-2.5 text-sm transition-colors flex items-center gap-2 ${
                   isActive
-                    ? 'bg-p5red text-white'
-                    : 'text-gray-400 hover:text-p5white hover:bg-p5card'
+                    ? 'bg-p5red/10 text-p5red border-l-4 border-p5red pl-3'
+                    : 'text-gray-400 hover:text-p5white hover:bg-p5card border-l-4 border-transparent pl-3'
                 }`
               }
             >
@@ -59,7 +65,7 @@ export function NavBar() {
             to={l.to}
             className={({ isActive }) =>
               `flex-1 py-3 font-display font-bold tracking-widest uppercase text-xs text-center transition-colors ${
-                isActive ? 'text-p5red border-t-2 border-p5red' : 'text-gray-500'
+                isActive ? 'text-p5red border-t-4 border-p5red' : 'text-gray-400 border-t-4 border-transparent'
               }`
             }
           >

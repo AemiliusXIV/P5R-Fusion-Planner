@@ -370,8 +370,8 @@ export const confidantRequirements: Record<string, { arcana: string; rank: numbe
 };
 
 export const confidantNames: Record<string, string> = {
-  "Fool":       "Ryuji (Star)",
-  "Magician":   "Ryuji (Chariot)",
+  "Fool":       "Igor (Fool)",
+  "Magician":   "Morgana (Magician)",
   "Priestess":  "Makoto (Priestess)",
   "Empress":    "Haru (Empress)",
   "Emperor":    "Yusuke (Emperor)",
@@ -382,7 +382,7 @@ export const confidantNames: Record<string, string> = {
   "Hermit":     "Futaba (Hermit)",
   "Fortune":    "Chihaya (Fortune)",
   "Strength":   "Caroline & Justine (Strength)",
-  "Hanged":     "Mishima (Moon)",
+  "Hanged":     "Iwai (Hanged)",
   "Death":      "Tae (Death)",
   "Temperance": "Sadayo (Temperance)",
   "Devil":      "Ichiko (Devil)",
@@ -390,7 +390,7 @@ export const confidantNames: Record<string, string> = {
   "Star":       "Hifumi (Star)",
   "Moon":       "Mishima (Moon)",
   "Sun":        "Toranosuke (Sun)",
-  "Judgement":  "Igor (Judgement)",
+  "Judgement":  "Sae (Judgement)",
   "Faith":      "Kasumi (Faith)",
   "Councillor": "Maruki (Councillor)",
   "World":      "Igor (World)",

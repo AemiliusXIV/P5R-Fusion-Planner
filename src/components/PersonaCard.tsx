@@ -19,8 +19,17 @@ export function PersonaCard({ persona }: Props) {
 
   const padClass = displaySize === 'compact' ? 'p-2' : displaySize === 'comfortable' ? 'p-4' : 'p-3';
 
+  // Use explicit classes instead of card-p5 so we can control border colour on hover.
+  // Default: dark gray left bar. Hover: red. Owned: green. Priority: owned > hover > default.
+  const borderClass = isOwned
+    ? 'border-l-4 border-green-500'
+    : 'border-l-4 border-p5border hover:border-p5red';
+
   return (
-    <div className={`card-p5 relative flex flex-col gap-2 ${padClass} hover:border-p5red transition-all cursor-pointer group ${isOwned ? 'border-green-500' : ''}`}>
+    <div
+      className={`bg-p5card relative flex flex-col gap-2 ${padClass} ${borderClass} transition-colors cursor-pointer group`}
+      style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)' }}
+    >
       {/* Wishlist star */}
       {isWishlist && (
         <span className="absolute top-2 right-2 text-p5gold text-sm" title="Wishlisted">★</span>
@@ -37,7 +46,8 @@ export function PersonaCard({ persona }: Props) {
             {persona.name}
           </Link>
         </div>
-        <span className="font-display font-bold text-p5gold text-lg leading-none mt-1 shrink-0">
+        {/* Level: large gold number is a key P5 visual element */}
+        <span className="font-display font-bold text-p5gold text-xl leading-none mt-0.5 shrink-0 tabular-nums">
           {persona.level}
         </span>
       </div>
@@ -46,14 +56,14 @@ export function PersonaCard({ persona }: Props) {
       <div className="flex gap-1">
         {persona.stats.map((val, i) => (
           <div key={i} className="flex flex-col items-center gap-0.5 flex-1">
-            <span className="text-[9px] text-gray-500 font-display tracking-wider">{statLabels[i]}</span>
+            <span className="text-[10px] text-gray-400 font-display tracking-wider">{statLabels[i]}</span>
             <div className="w-full bg-p5border h-1">
               <div
                 className="h-full bg-p5red"
                 style={{ width: `${(val / maxStat) * 100}%` }}
               />
             </div>
-            <span className="text-[10px] text-gray-400">{val}</span>
+            <span className="text-[10px] text-gray-300 font-display font-bold tabular-nums">{val}</span>
           </div>
         ))}
       </div>
