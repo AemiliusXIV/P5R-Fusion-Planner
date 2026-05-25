@@ -34,6 +34,23 @@ export function PersonaDetail() {
     return calculator.getAllResultingRecipesFrom(persona);
   }, [persona, calculator]);
 
+  // Annotate each recipe with owned status and sort ready-to-fuse first.
+  const enrichedRecipes = useMemo(() => {
+    return recipes
+      .map(r => {
+        const ready = r.sources.every(s => !!ownedMap[s.name]?.owned);
+        const partial = !ready && r.sources.some(s => !!ownedMap[s.name]?.owned);
+        return { ...r, ready, partial };
+      })
+      .sort((a, b) => {
+        if (a.ready !== b.ready) return a.ready ? -1 : 1;
+        if (a.partial !== b.partial) return a.partial ? -1 : 1;
+        return a.cost - b.cost;
+      });
+  }, [recipes, ownedMap]);
+
+  const readyCount = enrichedRecipes.filter(r => r.ready).length;
+
   const skills = useMemo(() => {
     if (!persona) return [];
     const sorted = Object.entries(persona.skills).sort(([, a], [, b]) => a - b);
@@ -181,29 +198,46 @@ export function PersonaDetail() {
       </div>
 
       {/* Fusion recipes */}
-      {recipes.length > 0 && (
+      {enrichedRecipes.length > 0 && (
         <div className="card-p5 p-4">
-          <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-3">
-            Fusion Recipes ({recipes.length})
+          <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-3 flex items-center gap-2">
+            Fusion Recipes ({enrichedRecipes.length})
+            {readyCount > 0 && (
+              <span className="text-green-400 text-xs font-display font-bold normal-case tracking-normal">
+                · {readyCount} ready to fuse
+              </span>
+            )}
           </h2>
           <div className="flex flex-col gap-1 max-h-64 overflow-y-auto scrollbar-thin">
-            {recipes.slice(0, 50).map((r, i) => (
-              <div key={i} className="flex items-center gap-2 py-1 border-b border-p5border last:border-0 text-sm flex-wrap">
-                {r.sources.map((src, si) => (
-                  <span key={si} className="flex items-center gap-2">
-                    {si > 0 && <span className="text-gray-600 font-display">+</span>}
-                    <Link to={`/persona/${encodeURIComponent(src.name)}`} className="text-p5white hover:text-p5red transition-colors font-display">
-                      {src.name}
-                    </Link>
-                  </span>
-                ))}
-                <span className="text-xs text-gray-600 font-display ml-auto shrink-0">
-                  ¥{r.cost.toLocaleString()}
+            {enrichedRecipes.slice(0, 50).map((r, i) => (
+              <div
+                key={i}
+                className={`flex items-center gap-2 py-1 border-b border-p5border last:border-0 text-sm flex-wrap ${r.ready ? 'bg-green-950/20' : ''}`}
+              >
+                {r.sources.map((src, si) => {
+                  const srcOwned = !!ownedMap[src.name]?.owned;
+                  return (
+                    <span key={si} className="flex items-center gap-2">
+                      {si > 0 && <span className="text-gray-600 font-display">+</span>}
+                      <Link
+                        to={`/persona/${encodeURIComponent(src.name)}`}
+                        className={`hover:text-p5red transition-colors font-display ${srcOwned ? 'text-green-400' : 'text-p5white'}`}
+                      >
+                        {src.name}
+                      </Link>
+                    </span>
+                  );
+                })}
+                <span className="ml-auto shrink-0 flex items-center gap-2">
+                  {r.ready && (
+                    <span className="text-[10px] text-green-400 font-display font-bold uppercase">✓ Ready</span>
+                  )}
+                  <span className="text-xs text-gray-600 font-display">¥{r.cost.toLocaleString()}</span>
                 </span>
               </div>
             ))}
-            {recipes.length > 50 && (
-              <div className="text-xs text-gray-600 font-display py-2">…and {recipes.length - 50} more</div>
+            {enrichedRecipes.length > 50 && (
+              <div className="text-xs text-gray-600 font-display py-2">…and {enrichedRecipes.length - 50} more</div>
             )}
           </div>
         </div>

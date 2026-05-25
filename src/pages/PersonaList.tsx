@@ -1,6 +1,7 @@
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { useStore } from '../store/useStore';
 import { PersonaCard } from '../components/PersonaCard';
+import { specialCombos } from '../data/Data5Royal';
 
 const ALL_ARCANA = [
   'Fool','Magician','Priestess','Empress','Emperor','Hierophant','Lovers','Chariot',
@@ -20,6 +21,7 @@ export function PersonaList() {
   } = useStore();
 
   const [sortBy, setSortBy] = useState<'level' | 'name' | 'arcana'>('level');
+  const [showFuseableOnly, setShowFuseableOnly] = useState(false);
   const [visibleCount, setVisibleCount] = useState(60);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -33,6 +35,33 @@ export function PersonaList() {
     const recipes = calculator.getAllResultingRecipesFrom(p);
     return { matched: p.name, results: new Set(recipes.map(r => r.result.name)) };
   }, [ingredientFilter, personaList, calculator]);
+
+  // Compute which personas can be fused right now from the owned collection.
+  // Null when the filter is off (avoids running when not needed).
+  const fuseableNames = useMemo<Set<string> | null>(() => {
+    if (!showFuseableOnly) return null;
+    const ownedList = personaList.filter(p => ownedMap[p.name]?.owned);
+    if (ownedList.length === 0) return new Set();
+    const ownedNames = new Set(ownedList.map(p => p.name));
+    const result = new Set<string>();
+
+    // Binary fusions: covers normal recipes and 2-ingredient special combos.
+    for (let i = 0; i < ownedList.length; i++) {
+      for (let j = i; j < ownedList.length; j++) {
+        const fused = calculator.fuse(ownedList[i], ownedList[j]);
+        if (fused && !ownedNames.has(fused.name)) result.add(fused.name);
+      }
+    }
+
+    // Multi-ingredient special combos (3+ sources).
+    for (const combo of specialCombos) {
+      if (combo.sources.length > 2 && combo.sources.every(s => ownedNames.has(s))) {
+        if (!ownedNames.has(combo.result)) result.add(combo.result);
+      }
+    }
+
+    return result;
+  }, [showFuseableOnly, personaList, calculator, ownedMap]);
 
   const filtered = useMemo(() => {
     let list = [...personaList];
@@ -58,6 +87,10 @@ export function PersonaList() {
       list = list.filter(p => ownedMap[p.name]?.wishlist);
     }
 
+    if (fuseableNames !== null) {
+      list = list.filter(p => fuseableNames.has(p.name));
+    }
+
     list.sort((a, b) => {
       if (sortBy === 'name') return a.name.localeCompare(b.name);
       if (sortBy === 'arcana') return a.arcana.localeCompare(b.arcana) || a.level - b.level;
@@ -65,7 +98,7 @@ export function PersonaList() {
     });
 
     return list;
-  }, [personaList, nameFilter, ingredientData, arcanaFilter, showOwnedOnly, showWishlistOnly, sortBy, ownedMap]);
+  }, [personaList, nameFilter, ingredientData, arcanaFilter, showOwnedOnly, showWishlistOnly, fuseableNames, sortBy, ownedMap]);
 
   // Reset to first page whenever the filtered set changes
   useEffect(() => { setVisibleCount(60); }, [filtered]);
@@ -84,7 +117,7 @@ export function PersonaList() {
 
   const visible = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
-  const hasFilters = !!(nameFilter.trim() || ingredientFilter.trim() || arcanaFilter || showOwnedOnly || showWishlistOnly);
+  const hasFilters = !!(nameFilter.trim() || ingredientFilter.trim() || arcanaFilter || showOwnedOnly || showWishlistOnly || showFuseableOnly);
 
   return (
     <div className="flex flex-col gap-4 p-4 pb-20 md:pb-4">
@@ -156,6 +189,14 @@ export function PersonaList() {
           >
             Wishlist only
           </button>
+
+          <button
+            onClick={() => setShowFuseableOnly(!showFuseableOnly)}
+            className={`px-3 py-2 text-xs font-display font-bold tracking-wider uppercase border transition-colors ${showFuseableOnly ? 'border-sky-500 text-sky-400 bg-sky-950/20' : 'border-p5border text-gray-500 hover:border-sky-500'}`}
+          >
+            Fuseable now
+          </button>
+
           {hasFilters && (
             <button
               onClick={() => {
@@ -164,6 +205,7 @@ export function PersonaList() {
                 setArcanaFilter('');
                 setShowOwnedOnly(false);
                 setShowWishlistOnly(false);
+                setShowFuseableOnly(false);
               }}
               className="px-3 py-2 text-xs font-display font-bold tracking-wider uppercase border border-p5border text-gray-600 hover:border-p5red hover:text-p5red transition-colors ml-auto"
             >
