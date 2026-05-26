@@ -1,3 +1,5 @@
+﻿// Copyright (c) AemiliusXIV
+// SPDX-License-Identifier: Apache-2.0
 import { lazy } from 'react';
 import { createHashRouter } from 'react-router-dom';
 import { PersonaList } from './pages/PersonaList';

@@ -1,47 +1,32 @@
 P5R Fusion Planner
-==================
+Copyright (c) AemiliusXIV
 
-This product includes software and data adapted from:
+This product includes software developed by third parties. See LICENSE for
+the full terms of each upstream project.
 
-  persona5_calculator
-  https://github.com/chinhodado/persona5_calculator
-  Licensed under the Apache License, Version 2.0
+================================================================================
 
-  persona5_calculator is itself derived from persona-fusion-calculator
-  by Anthony Lieuallen (https://github.com/arantius/persona-fusion-calculator),
-  whose copyright is retained in the LICENSE file of both projects.
-  The Persona 5-specific data, fusion tables, skill data, and ongoing
-  maintenance of persona5_calculator are the work of chinhodado.
+persona-fusion-calculator
+Copyright 2013, Anthony Lieuallen
+https://github.com/arantius/persona-fusion-calculator
 
-  Copyright 2013, Anthony Lieuallen
+persona5_calculator
+Base codebase copyright 2013, Anthony Lieuallen.
+Persona 5 / Royal data, fusion tables, skill data, and ongoing maintenance
+copyright chinhodado.
+https://github.com/chinhodado/persona5_calculator
 
-The following source files in this repository are derived from persona5_calculator:
+================================================================================
 
-  src/data/PersonaDataRoyal.ts   (adapted from data/PersonaDataRoyal.ts)
-  src/data/SkillDataRoyal.ts     (adapted from data/SkillDataRoyal.ts)
-  src/data/ItemDataRoyal.ts      (adapted from data/ItemDataRoyal.ts)
-  src/data/Data5Royal.ts         (adapted from data/Data5Royal.ts)
-  src/engine/FusionCalculator.ts (adapted from src/FusionCalculator.ts)
+The companion/ subdirectory additionally incorporates material from:
 
-Adaptations made: converted from AngularJS/global-variable pattern to ES modules
-(TypeScript named exports); added getRecipesDeep() for recursive tree building.
-All fusion logic, arcana tables, persona stats, skill data, and special/rare combo
-lists originate from the above upstream projects.
+fiber-saveutil
+Copyright (c) zarroboogs
+https://github.com/zarroboogs/fiber-saveutil
+License status: unconfirmed -- see companion/KNOWN_ISSUES.md
 
-The companion/ subdirectory contains a Windows save reader that incorporates
-work from two additional Apache 2.0 projects:
-
-  fiber-saveutil
-  Copyright (c) zarroboogs
-  https://github.com/zarroboogs/fiber-saveutil
-  Licensed under the Apache License, Version 2.0.
-  The companion save reader's decryption logic is based on this project.
-
-  KingdomSaveEditor (KHSave.LibPersona5)
-  Copyright (c) Xeeynamo
-  https://github.com/Xeeynamo/KingdomSaveEditor
-  Licensed under the MIT License.
-  The persona ID lookup table used by the companion save reader
-  (companion/Resources/persona-ids.txt) is adapted from this project.
-
-The Apache License 2.0 text is included in the LICENSE file in this repository.
+KingdomSaveEditor (KHSave.LibPersona5)
+Copyright (c) 2020 Luciano Ciccariello (Xeeynamo)
+https://github.com/Xeeynamo/KingdomSaveEditor
+License: GNU General Public License, Version 3
+License compatibility: under review -- see companion/KNOWN_ISSUES.md

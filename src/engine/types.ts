@@ -1,3 +1,5 @@
+﻿// Copyright (c) AemiliusXIV
+// SPDX-License-Identifier: Apache-2.0
 export type ElementResist = 'wk' | 'rs' | 'nu' | 'ab' | 'rp' | '-';
 
 export interface PersonaEntry {

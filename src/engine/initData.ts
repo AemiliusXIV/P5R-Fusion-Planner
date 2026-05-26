@@ -1,3 +1,5 @@
+﻿// Copyright (c) AemiliusXIV
+// SPDX-License-Identifier: Apache-2.0
 import type { PersonaRuntime } from './types';
 import { personaMapRoyal } from '../data/PersonaDataRoyal';
 import { skillMapRoyal } from '../data/SkillDataRoyal';

@@ -1,3 +1,5 @@
+﻿// Copyright (c) AemiliusXIV
+// SPDX-License-Identifier: Apache-2.0
 import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { NavBar } from './components/NavBar';

@@ -1,3 +1,5 @@
+﻿// Copyright (c) AemiliusXIV
+// SPDX-License-Identifier: Apache-2.0
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'

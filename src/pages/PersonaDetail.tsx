@@ -1,3 +1,5 @@
+﻿// Copyright (c) AemiliusXIV
+// SPDX-License-Identifier: Apache-2.0
 import { useParams, Link } from 'react-router-dom';
 import { useMemo } from 'react';
 import { useStore } from '../store/useStore';

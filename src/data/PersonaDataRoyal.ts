@@ -1,4 +1,12 @@
-﻿import type { PersonaMap } from '../engine/types';
+// Adapted from persona5_calculator by chinhodado
+// https://github.com/chinhodado/persona5_calculator
+// Original codebase copyright 2013 Anthony Lieuallen (persona-fusion-calculator)
+// Persona 5 / Royal data copyright chinhodado
+// SPDX-License-Identifier: Apache-2.0
+//
+// Modifications by AemiliusXIV:
+// - Converted from AngularJS / global-variable pattern to TypeScript ES modules
+import type { PersonaMap } from '../engine/types';
 
 export const personaMapRoyal: PersonaMap = {
     "Abaddon": {

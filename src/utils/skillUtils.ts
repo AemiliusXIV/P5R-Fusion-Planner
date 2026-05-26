@@ -1,3 +1,5 @@
+﻿// Copyright (c) AemiliusXIV
+// SPDX-License-Identifier: Apache-2.0
 // Shared skill display helpers used by PersonaDetail and SkillList.
 
 export function getSkillCost(element: string, cost?: number): string {

@@ -1,3 +1,5 @@
+﻿// Copyright (c) AemiliusXIV
+// SPDX-License-Identifier: Apache-2.0
 import { Link } from 'react-router-dom';
 import type { PersonaRuntime } from '../engine/initData';
 import { useStore } from '../store/useStore';

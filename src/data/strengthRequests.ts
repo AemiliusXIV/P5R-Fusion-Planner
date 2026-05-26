@@ -1,3 +1,5 @@
+﻿// Copyright (c) AemiliusXIV
+// SPDX-License-Identifier: Apache-2.0
 // The 10 Caroline & Justine (Strength Confidant) fusion requests.
 // Each rank requires bringing a specific persona that has learned a specific skill.
 // Skills may be learned naturally, inherited via fusion, or obtained via skill card.

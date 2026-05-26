@@ -1,3 +1,82 @@
+================================================================================
+  P5R Fusion Planner
+  Copyright (c) AemiliusXIV
+  SPDX-License-Identifier: Apache-2.0
+================================================================================
+
+This project is licensed under the Apache License, Version 2.0 (the "License").
+You may not use files in this repository except in compliance with the License.
+A copy of the License is reproduced in Section B of this file and is also
+available at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+================================================================================
+  SECTION A -- THIRD-PARTY NOTICES
+================================================================================
+
+This project incorporates material from the following third-party works. Full
+attribution details are also reproduced in the NOTICE file, as required by the
+Apache License, Version 2.0, Section 4(d).
+
+--------------------------------------------------------------------------------
+1. persona-fusion-calculator
+   Copyright 2013, Anthony Lieuallen
+   https://github.com/arantius/persona-fusion-calculator
+   Licensed under the Apache License, Version 2.0.
+
+2. persona5_calculator
+   Derived from persona-fusion-calculator (above).
+   Base codebase copyright 2013, Anthony Lieuallen.
+   Persona 5 / Royal-specific data, fusion tables, skill data, arcana tables,
+   and ongoing maintenance: copyright chinhodado.
+   https://github.com/chinhodado/persona5_calculator
+   Licensed under the Apache License, Version 2.0.
+
+   The following source files in this repository are adapted from
+   persona5_calculator:
+
+     src/data/PersonaDataRoyal.ts   (adapted from data/PersonaDataRoyal.ts)
+     src/data/SkillDataRoyal.ts     (adapted from data/SkillDataRoyal.ts)
+     src/data/ItemDataRoyal.ts      (adapted from data/ItemDataRoyal.ts)
+     src/data/Data5Royal.ts         (adapted from data/Data5Royal.ts)
+     src/engine/FusionCalculator.ts (adapted from src/FusionCalculator.ts)
+
+   Adaptations made: converted from AngularJS / global-variable pattern to
+   ES modules (TypeScript named exports); added getRecipesDeep() for recursive
+   tree building. All fusion logic, arcana tables, persona stats, skill data,
+   and special/rare combo lists originate from the upstream projects listed
+   above.
+
+3. fiber-saveutil
+   Copyright (c) zarroboogs
+   https://github.com/zarroboogs/fiber-saveutil
+   LICENSE STATUS UNCONFIRMED -- see companion/KNOWN_ISSUES.md
+   The companion save reader's decryption logic is based on this project.
+   Permission to redistribute has been sought from the author; this notice will
+   be updated once a response is received. Do not distribute the companion/
+   subdirectory until this matter is resolved.
+
+4. KingdomSaveEditor (KHSave.LibPersona5)
+   Copyright (c) 2020 Luciano Ciccariello (Xeeynamo)
+   https://github.com/Xeeynamo/KingdomSaveEditor
+   Licensed under the GNU General Public License, Version 3.
+   LICENSE COMPATIBILITY UNDER REVIEW -- see companion/KNOWN_ISSUES.md
+   The persona ID lookup table used by the companion save reader
+   (companion/Resources/persona-ids.txt) is adapted from this project.
+   The copyrightability of a factual enumeration table is disputed; this notice
+   will be updated once the matter is resolved. Do not distribute the companion/
+   subdirectory until this matter is resolved.
+
+================================================================================
+  SECTION B -- APACHE LICENSE, VERSION 2.0
+================================================================================
+
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -27,7 +106,7 @@
       including but not limited to software source code, documentation
       source, and configuration files.
 
-      "Object form" shall mean any form resulting from mechanical
+      "Object" form shall mean any form resulting from mechanical
       transformation or translation of a Source form, including but
       not limited to compiled object code, generated documentation,
       and conversions to other media types.
@@ -39,11 +118,11 @@
 
       "Derivative Works" shall mean any work, whether in Source or Object
       form, that is based on (or derived from) the Work and for which the
-      editorial revisions, annotations, elaborations, or other modifications
-      represent, as a whole, an original work of authorship. For the purposes
-      of this License, Derivative Works shall not include works that remain
-      separable from, or merely link (or bind by name) to the interfaces of,
-      the Work and Derivative Works thereof.
+      editorial revisions, annotations, elaborations, or other
+      modifications represent, as a whole, an original work of authorship.
+      For the purposes of this License, Derivative Works shall not include
+      works that remain separable from, or merely link (or bind by name)
+      to the interfaces of, the Work and Derivative Works thereof.
 
       "Contribution" shall mean any work of authorship, including
       the original version of the Work and any modifications or additions
@@ -166,7 +245,7 @@
       the Work or Derivative Works thereof, You may choose to offer,
       and charge a fee for, acceptance of support, warranty, indemnity,
       or other liability obligations and/or rights consistent with this
-      License. However, in accepting such obligations, You may act only
+      License. However, in accepting such obligations, you may act only
       on your own behalf and on your sole responsibility, not on behalf
       of any other Contributor, and only if you agree to indemnify,
       defend, and hold each Contributor harmless for any liability
@@ -174,38 +253,3 @@
       of your accepting any such warranty or additional liability.
 
    END OF TERMS AND CONDITIONS
-
----
-
-Copyright notices for works incorporated into this project:
-
-   persona-fusion-calculator
-   Copyright 2013, Anthony Lieuallen
-   https://github.com/arantius/persona-fusion-calculator
-
-   persona5_calculator (derived from the above)
-   https://github.com/chinhodado/persona5_calculator
-   The Persona 5-specific data and fusion logic in persona5_calculator
-   are the work of chinhodado. The copyright of the underlying codebase
-   belongs to Anthony Lieuallen as the originating author, per the
-   Apache 2.0 license carried through the project lineage.
-
-   fiber-saveutil
-   Copyright (c) zarroboogs
-   https://github.com/zarroboogs/fiber-saveutil
-   Licensed under the Apache License, Version 2.0.
-
-   KingdomSaveEditor (KHSave.LibPersona5)
-   Copyright (c) Xeeynamo
-   https://github.com/Xeeynamo/KingdomSaveEditor
-   Licensed under the MIT License.
-
-   persona-fusion-calculator and persona5_calculator are licensed under the
-   Apache License, Version 2.0. You may obtain a copy at
-   http://www.apache.org/licenses/LICENSE-2.0
-
----
-
-New code in this repository (UI components, Fusion Tree planner, Zustand store,
-PWA configuration) is copyright (c) AemiliusXIV and also released under the
-Apache License, Version 2.0.

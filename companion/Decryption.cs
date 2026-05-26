@@ -7,8 +7,10 @@ namespace P5RCompanion;
 /// <summary>
 /// Decrypts a Persona 5 Royal PC save file.
 ///
-/// Algorithm ported from fiber-saveutil's save.py (Apache 2.0, zarroboogs):
+/// Algorithm ported from fiber-saveutil's save.py by zarroboogs:
 ///   https://github.com/zarroboogs/fiber-saveutil
+///   License status: unconfirmed (no LICENSE file in upstream repo) --
+///   see companion/KNOWN_ISSUES.md
 ///
 /// File format (encrypted on disk):
 ///   0x00  "DATA" magic            4 bytes
@@ -35,7 +37,7 @@ namespace P5RCompanion;
 public static class Decryption
 {
     // Static AES-256 key, public knowledge; the same value ships with every
-    // retail copy of P5R PC. Sourced from fiber-saveutil/save.py (Apache 2.0).
+    // retail copy of P5R PC. Sourced from fiber-saveutil/save.py (zarroboogs).
     private static readonly byte[] AesKey = Convert.FromBase64String(
         "3lOZS0kYSoOOtkC4c7IDfvNXnxIprUPTlUGVC3yBJF0=");
 

@@ -1,3 +1,5 @@
+﻿// Copyright (c) AemiliusXIV
+// SPDX-License-Identifier: Apache-2.0
 const ARCANA_COLORS: Record<string, string> = {
   Fool:       'bg-gray-600',
   Magician:   'bg-red-700',

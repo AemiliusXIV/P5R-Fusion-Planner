@@ -1,3 +1,5 @@
+﻿// Copyright (c) AemiliusXIV
+// SPDX-License-Identifier: Apache-2.0
 import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import type { FusionNode } from '../engine/types';

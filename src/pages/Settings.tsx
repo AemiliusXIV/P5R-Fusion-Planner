@@ -1,3 +1,5 @@
+﻿// Copyright (c) AemiliusXIV
+// SPDX-License-Identifier: Apache-2.0
 import { useRef, useState } from 'react';
 import { useStore } from '../store/useStore';
 import type { DisplaySize, ColorMode } from '../store/useStore';
