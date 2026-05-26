@@ -18,7 +18,10 @@ export function PersonaList() {
     showOwnedOnly, setShowOwnedOnly,
     showWishlistOnly, setShowWishlistOnly,
     ownedMap, displaySize,
+    lastImportedAt, companionBannerDismissed, dismissCompanionBanner,
   } = useStore();
+
+  const showCompanionBanner = lastImportedAt === null && !companionBannerDismissed;
 
   const [sortBy, setSortBy] = useState<'level' | 'name' | 'arcana'>('level');
   const [showFuseableOnly, setShowFuseableOnly] = useState(false);
@@ -127,6 +130,33 @@ export function PersonaList() {
         <h1 className="font-display font-bold text-2xl text-p5white tracking-widest uppercase">Personas</h1>
         <span className="text-gray-500 text-sm font-display ml-auto">{filtered.length} shown</span>
       </div>
+
+      {/* Companion banner — shown until user imports or dismisses */}
+      {showCompanionBanner && (
+        <div className="card-p5 flex items-center gap-3 px-4 py-3">
+          <div className="flex-1 min-w-0">
+            <span className="text-xs text-gray-400 font-display">
+              The{' '}
+              <a
+                href="https://github.com/AemiliusXIV/P5RFusionCalc/releases"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-p5white hover:text-p5red transition-colors font-bold"
+              >
+                companion app ↗
+              </a>
+              {' '}can read your P5R save file and populate this list automatically — no manual marking needed.
+            </span>
+          </div>
+          <button
+            onClick={dismissCompanionBanner}
+            aria-label="Dismiss companion app banner"
+            className="shrink-0 text-gray-600 hover:text-p5white transition-colors text-lg leading-none"
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex flex-col gap-2">

@@ -4,20 +4,11 @@ import type { DisplaySize, ColorMode } from '../store/useStore';
 import { dlcPersona, confidantNames } from '../data/Data5Royal';
 import type { ImportedOwnedData } from '../engine/types';
 
-const DEPTH_DESCRIPTIONS: Record<number, string> = {
-  1: 'Shows only the two direct ingredients for your target persona. Good for a quick lookup.',
-  2: 'Shows ingredients and what you need to fuse each of them. Two steps total.',
-  3: 'Three layers deep; usually enough to see whether base-level personas are in the chain.',
-  4: 'Default. Most fusion chains in P5R fully resolve at this depth. Recommended starting point.',
-  5: 'Extended depth, useful for complex personas like Yoshitsune or Satanael where chains are long.',
-  6: 'Maximum depth. Can be slow for high-level personas. Use when depth 5 still leaves unknowns.',
-};
 
 export function Settings() {
   const {
     dlcEnabled, setDlcEnabled, setAllDlcEnabled,
     maxedConfidants, setMaxedConfidant, setAllConfidants,
-    fusionTreeDepth, setFusionTreeDepth,
     displaySize, setDisplaySize,
     colorMode, setColorMode,
     exportOwned, importOwned,
@@ -202,40 +193,6 @@ export function Settings() {
               </label>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ── Fusion chain depth ── */}
-      <section className="card-p5 p-4">
-        <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-1">Fusion Chain Depth</h2>
-        <p className="text-xs text-gray-500 font-display mb-4">
-          How many fusion steps the Fusion Tree Planner expands when you open it for a persona.
-          Each step reveals the ingredients needed to fuse the previous layer's personas.
-        </p>
-        <div className="flex items-center gap-4">
-          <input
-            type="range"
-            min={1}
-            max={6}
-            value={fusionTreeDepth}
-            onChange={e => setFusionTreeDepth(Number(e.target.value))}
-            className="accent-p5red flex-1"
-          />
-          <span className="font-display font-bold text-p5white text-xl w-6">{fusionTreeDepth}</span>
-        </div>
-        <p className="text-xs text-gray-400 mt-3 font-display leading-relaxed">
-          {DEPTH_DESCRIPTIONS[fusionTreeDepth]}
-        </p>
-        <div className="mt-3 grid grid-cols-6 gap-1">
-          {[1,2,3,4,5,6].map(d => (
-            <button
-              key={d}
-              onClick={() => setFusionTreeDepth(d)}
-              className={`text-xs font-display font-bold py-1 border transition-colors ${fusionTreeDepth === d ? 'border-p5red text-p5red bg-red-950/30' : 'border-p5border text-gray-500 hover:border-p5red hover:text-p5red'}`}
-            >
-              {d}
-            </button>
-          ))}
         </div>
       </section>
 

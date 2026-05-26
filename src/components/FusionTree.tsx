@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import type { FusionNode } from '../engine/types';
 import { useStore } from '../store/useStore';
@@ -19,7 +19,6 @@ function NodeCard({ node, onSwapRecipe, onMarkDone, sessionOwned, isRoot, requir
   const isOwnedNow = node.owned || sessionOwned.has(node.persona) || !!ownedMap[node.persona]?.owned;
   const wishlist = !isOwnedNow && !!ownedMap[node.persona]?.wishlist;
 
-  // Amber highlight: not owned, has a recipe, and both direct ingredients are currently owned.
   const childA = node.children?.[0];
   const childB = node.children?.[1];
   const ingAOwned = !!(childA && (childA.owned || sessionOwned.has(childA.persona) || !!ownedMap[childA.persona]?.owned));
@@ -34,7 +33,6 @@ function NodeCard({ node, onSwapRecipe, onMarkDone, sessionOwned, isRoot, requir
     ? 'border-l-4 border-yellow-500 bg-yellow-950/20'
     : 'border-l-4 border-p5red bg-p5card';
 
-  // Sort alternatives owned-first so the most achievable recipes surface at the top.
   const sortedAlts = [...node.alternatives].sort((a, b) => {
     const score = (pair: [string, string]) => {
       const p0 = !!ownedMap[pair[0]]?.owned || sessionOwned.has(pair[0]);
@@ -47,7 +45,7 @@ function NodeCard({ node, onSwapRecipe, onMarkDone, sessionOwned, isRoot, requir
   });
 
   return (
-    <div className={`${statusClass} p-2 min-w-[180px] max-w-[240px]`}>
+    <div className={`${statusClass} p-2 min-w-[180px] max-w-[240px]`} style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)' }}>
       <div className="flex items-center gap-1 mb-1">
         <ArcanaIcon arcana={node.arcana} size="sm" />
         {isRoot && (
@@ -122,7 +120,6 @@ function NodeCard({ node, onSwapRecipe, onMarkDone, sessionOwned, isRoot, requir
 
 interface FusionTreeProps {
   node: FusionNode;
-  depth?: number;
   isRoot?: boolean;
   sessionOwned: Set<string>;
   onMarkDone: (name: string) => void;
@@ -130,29 +127,62 @@ interface FusionTreeProps {
   skillSources?: Set<string>;
 }
 
-export function FusionTree({ node, depth = 0, isRoot = false, sessionOwned, onMarkDone, requiredSkill, skillSources }: FusionTreeProps) {
-  const { calculator, personaMap, ownedMap, maxedConfidants, fusionTreeDepth } = useStore();
+export function FusionTree({ node, isRoot = false, sessionOwned, onMarkDone, requiredSkill, skillSources }: FusionTreeProps) {
+  const { calculator, personaMap, ownedMap, maxedConfidants } = useStore();
   const [currentNode, setCurrentNode] = useState(node);
-
-  const handleSwap = (recipe: [string, string]) => {
-    if (!personaMap[recipe[0]] || !personaMap[recipe[1]]) return;
-    const remainingDepth = fusionTreeDepth - depth - 1;
-    const newChildren: [FusionNode, FusionNode] = [
-      calculator.getRecipesDeep(recipe[0], remainingDepth, ownedMap, maxedConfidants),
-      calculator.getRecipesDeep(recipe[1], remainingDepth, ownedMap, maxedConfidants),
-    ];
-    setCurrentNode({
-      ...currentNode,
-      recipe,
-      children: newChildren,
-      alternatives: currentNode.alternatives
-        .filter(a => !(a[0] === recipe[0] && a[1] === recipe[1]))
-        .concat([currentNode.recipe!]),
-    });
-  };
+  // Root's children are shown immediately; all other nodes start collapsed.
+  const [expanded, setExpanded] = useState(isRoot);
+  // Tracks whether we tried to expand and found no recipe.
+  const [noRecipe, setNoRecipe] = useState(false);
 
   const isOwnedNow = currentNode.owned || sessionOwned.has(currentNode.persona) || !!ownedMap[currentNode.persona]?.owned;
-  const isLeaf = !currentNode.children || isOwnedNow;
+
+  const handleSwap = useCallback((recipe: [string, string]) => {
+    if (!personaMap[recipe[0]] || !personaMap[recipe[1]]) return;
+    // Rebuild one level deep for the swapped ingredients; they can be expanded further if needed.
+    const newChildren: [FusionNode, FusionNode] = [
+      calculator.getRecipesDeep(recipe[0], 1, ownedMap, maxedConfidants),
+      calculator.getRecipesDeep(recipe[1], 1, ownedMap, maxedConfidants),
+    ];
+    setCurrentNode(prev => ({
+      ...prev,
+      recipe,
+      children: newChildren,
+      alternatives: prev.alternatives
+        .filter(a => !(a[0] === recipe[0] && a[1] === recipe[1]))
+        .concat([prev.recipe!]),
+    }));
+    setExpanded(true);
+  }, [calculator, personaMap, ownedMap, maxedConfidants]);
+
+  const handleToggle = useCallback(() => {
+    if (expanded) {
+      setExpanded(false);
+      return;
+    }
+    // Children not loaded yet — fetch one level on demand.
+    if (!currentNode.children) {
+      const loaded = calculator.getRecipesDeep(currentNode.persona, 1, ownedMap, maxedConfidants);
+      if (loaded.children) {
+        setCurrentNode(prev => ({
+          ...prev,
+          children: loaded.children,
+          recipe: loaded.recipe,
+          alternatives: loaded.alternatives,
+        }));
+        setNoRecipe(false);
+      } else {
+        // Persona has no recipe — it's a base persona, hide the toggle.
+        setNoRecipe(true);
+        return;
+      }
+    }
+    setExpanded(true);
+  }, [expanded, currentNode, calculator, ownedMap, maxedConfidants]);
+
+  const showChildren = expanded && !!currentNode.children && !isOwnedNow;
+  // Show toggle on any non-root, non-owned node that hasn't been confirmed as a base persona.
+  const showToggle = !isRoot && !isOwnedNow && !noRecipe;
 
   return (
     <div className="flex flex-col items-center">
@@ -166,7 +196,20 @@ export function FusionTree({ node, depth = 0, isRoot = false, sessionOwned, onMa
         skillSources={skillSources}
       />
 
-      {!isLeaf && currentNode.children && (
+      {isOwnedNow && !isRoot && (
+        <div className="mt-1 text-[10px] text-green-400 font-display font-bold">OWNED — stop here</div>
+      )}
+
+      {showToggle && (
+        <button
+          onClick={handleToggle}
+          className="mt-1.5 text-[10px] font-display uppercase tracking-widest border border-p5border px-2 py-0.5 transition-colors text-gray-500 hover:border-p5red hover:text-p5red"
+        >
+          {expanded ? '▲ hide' : '▼ show recipe'}
+        </button>
+      )}
+
+      {showChildren && currentNode.children && (
         <div className="flex items-start gap-4 mt-4 relative">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-4 bg-p5border" />
           <div className="flex gap-4 mt-4 relative">
@@ -174,7 +217,6 @@ export function FusionTree({ node, depth = 0, isRoot = false, sessionOwned, onMa
             <div className="flex flex-col items-center pt-4">
               <FusionTree
                 node={currentNode.children[0]}
-                depth={depth + 1}
                 sessionOwned={sessionOwned}
                 onMarkDone={onMarkDone}
                 requiredSkill={requiredSkill}
@@ -184,7 +226,6 @@ export function FusionTree({ node, depth = 0, isRoot = false, sessionOwned, onMa
             <div className="flex flex-col items-center pt-4">
               <FusionTree
                 node={currentNode.children[1]}
-                depth={depth + 1}
                 sessionOwned={sessionOwned}
                 onMarkDone={onMarkDone}
                 requiredSkill={requiredSkill}
@@ -193,10 +234,6 @@ export function FusionTree({ node, depth = 0, isRoot = false, sessionOwned, onMa
             </div>
           </div>
         </div>
-      )}
-
-      {isOwnedNow && !isRoot && (
-        <div className="mt-1 text-[10px] text-green-400 font-display font-bold">OWNED - stop here</div>
       )}
     </div>
   );

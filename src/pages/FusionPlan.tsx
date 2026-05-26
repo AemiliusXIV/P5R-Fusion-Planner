@@ -25,8 +25,7 @@ export function FusionPlan() {
   const decodedName = name ? decodeURIComponent(name) : '';
   const requiredSkill = searchParams.get('skill') ?? undefined;
   const {
-    personaMap, calculator, ownedMap, maxedConfidants,
-    fusionTreeDepth, setFusionTreeDepth, setOwned,
+    personaMap, calculator, ownedMap, maxedConfidants, setOwned,
   } = useStore();
 
   const persona = personaMap[decodedName];
@@ -51,12 +50,13 @@ export function FusionPlan() {
 
   const computeTree = useCallback(() => {
     if (!persona) { setRootNode(null); return; }
+    // Build one level deep — the tree expands lazily from there as the user drills in.
     setRootNode(
-      calculator.getRecipesDeep(decodedName, fusionTreeDepth, ownedMapRef.current, maxedConfidants)
+      calculator.getRecipesDeep(decodedName, 1, ownedMapRef.current, maxedConfidants)
     );
     setSessionOwned(new Set());
     setRefreshKey(k => k + 1);
-  }, [persona, calculator, decodedName, fusionTreeDepth, maxedConfidants]);
+  }, [persona, calculator, decodedName, maxedConfidants]);
 
   // Compute on mount and whenever depth, target, or confidant settings change.
   // Deliberately omits ownedMap so marking personas owned doesn't rebuild the tree.
@@ -114,19 +114,12 @@ export function FusionPlan() {
             })()}
           </div>
         </div>
-        <div className="ml-auto flex items-center gap-3 flex-wrap">
-          <label className="text-xs text-gray-500 font-display uppercase tracking-wider">Depth</label>
-          <input
-            type="range" min={1} max={6} value={fusionTreeDepth}
-            onChange={e => setFusionTreeDepth(Number(e.target.value))}
-            className="accent-p5red w-24"
-          />
-          <span className="text-p5white font-display font-bold w-4">{fusionTreeDepth}</span>
+        <div className="ml-auto flex items-center gap-3">
           <button
             onClick={computeTree}
             className="px-3 py-1 text-xs font-display font-bold uppercase tracking-wider border border-p5border text-gray-400 hover:text-p5white hover:border-p5red transition-colors"
           >
-            Refresh Tree
+            Refresh
           </button>
         </div>
       </div>

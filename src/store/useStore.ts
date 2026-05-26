@@ -12,10 +12,10 @@ export type ColorMode = 'p5' | 'bw';
 interface SettingsState {
   dlcEnabled: Record<string, boolean>;
   maxedConfidants: Record<string, boolean>;
-  fusionTreeDepth: number;
   displaySize: DisplaySize;
   colorMode: ColorMode;
   completedStrengthRequests: Record<number, boolean>;
+  companionBannerDismissed: boolean;
 }
 
 interface AppState extends SettingsState {
@@ -40,10 +40,10 @@ interface AppState extends SettingsState {
   setAllDlcEnabled(enabled: boolean): void;
   setMaxedConfidant(arcana: string, maxed: boolean): void;
   setAllConfidants(maxed: boolean): void;
-  setFusionTreeDepth(depth: number): void;
   setDisplaySize(v: DisplaySize): void;
   setColorMode(v: ColorMode): void;
   setStrengthComplete(rank: number, complete: boolean): void;
+  dismissCompanionBanner(): void;
 
   setNameFilter(v: string): void;
   setIngredientFilter(v: string): void;
@@ -77,10 +77,10 @@ export const useStore = create<AppState>()(
       showWishlistOnly: false,
       dlcEnabled: defaultDlcEnabled,
       maxedConfidants: {},
-      fusionTreeDepth: 4,
       displaySize: 'normal',
       colorMode: 'p5',
       completedStrengthRequests: {},
+      companionBannerDismissed: false,
 
       ...initialEngine,
 
@@ -144,12 +144,9 @@ export const useStore = create<AppState>()(
         set({ maxedConfidants: all });
       },
 
-      setFusionTreeDepth(depth) {
-        set({ fusionTreeDepth: Math.max(1, Math.min(6, depth)) });
-      },
-
       setDisplaySize(v) { set({ displaySize: v }); },
       setColorMode(v) { set({ colorMode: v }); },
+      dismissCompanionBanner() { set({ companionBannerDismissed: true }); },
       setStrengthComplete(rank, complete) {
         set(state => ({
           completedStrengthRequests: { ...state.completedStrengthRequests, [rank]: complete },
@@ -174,10 +171,10 @@ export const useStore = create<AppState>()(
         lastImportedAt: state.lastImportedAt,
         dlcEnabled: state.dlcEnabled,
         maxedConfidants: state.maxedConfidants,
-        fusionTreeDepth: state.fusionTreeDepth,
         displaySize: state.displaySize,
         colorMode: state.colorMode,
         completedStrengthRequests: state.completedStrengthRequests,
+        companionBannerDismissed: state.companionBannerDismissed,
       }),
       onRehydrateStorage: () => (state) => {
         // Rebuild the fusion engine from the rehydrated DLC settings.

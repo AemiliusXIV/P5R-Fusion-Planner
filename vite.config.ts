@@ -4,6 +4,17 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   base: '/P5RFusionCalc/',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) return 'vendor';
+          // Large static data files rarely change — split for cache efficiency
+          if (id.includes('/src/data/')) return 'data';
+        },
+      },
+    },
+  },
   plugins: [
     react(),
     VitePWA({

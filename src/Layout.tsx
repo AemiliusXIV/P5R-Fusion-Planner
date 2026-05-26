@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { NavBar } from './components/NavBar';
 import { useStore } from './store/useStore';
@@ -16,7 +17,13 @@ export function Layout() {
     >
       <NavBar />
       <main className="flex-1 overflow-x-hidden">
-        <Outlet />
+        <Suspense fallback={
+          <div className="p-8 font-display text-sm text-gray-500 tracking-widest uppercase">
+            Loading…
+          </div>
+        }>
+          <Outlet />
+        </Suspense>
       </main>
     </div>
   );
