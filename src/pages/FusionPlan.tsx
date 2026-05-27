@@ -1,10 +1,11 @@
-﻿// Copyright (c) AemiliusXIV
+// Copyright (c) AemiliusXIV
 // SPDX-License-Identifier: Apache-2.0
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useStore } from '../store/useStore';
 import { skillMapRoyal } from '../engine/initData';
 import { FusionTree } from '../components/FusionTree';
+import { ShareModal } from '../components/ShareModal';
 import { elemColor } from '../utils/skillUtils';
 import type { FusionNode } from '../engine/types';
 
@@ -19,6 +20,34 @@ function walkTree(node: FusionNode, sessionOwned: Set<string>): { fusions: numbe
     fusions: 1 + left.fusions + right.fusions,
     bases: [...left.bases, ...right.bases],
   };
+}
+
+interface SharedState {
+  swaps: Record<string, [string, string]>;
+  expanded: string[];
+}
+
+function decodeState(raw: string): SharedState | null {
+  try {
+    const normalised = raw.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = normalised + '='.repeat((4 - normalised.length % 4) % 4);
+    const json = atob(padded);
+    const parsed = JSON.parse(json);
+    if (typeof parsed !== 'object' || parsed === null) return null;
+    return {
+      swaps: parsed.swaps ?? {},
+      expanded: Array.isArray(parsed.expanded) ? parsed.expanded : [],
+    };
+  } catch {
+    return null;
+  }
+}
+
+function encodeState(state: SharedState): string {
+  return btoa(JSON.stringify(state))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
 }
 
 export function FusionPlan() {
@@ -40,34 +69,84 @@ export function FusionPlan() {
     return new Set(Object.keys(skill.personas));
   }, [requiredSkill]);
 
-  // Ref so computeTree always reads the latest ownedMap without being
-  // listed as a dependency (which would recompute on every owned change).
   const ownedMapRef = useRef(ownedMap);
   ownedMapRef.current = ownedMap;
 
   const [rootNode, setRootNode] = useState<FusionNode | null>(null);
   const [sessionOwned, setSessionOwned] = useState<Set<string>>(new Set());
-  // Incrementing this key forces FusionTree to remount, resetting all swap state.
   const [refreshKey, setRefreshKey] = useState(0);
+
+  // ── Share state ──────────────────────────────────────────────────────────
+  // Decoded once from the URL on mount; persists across refreshes so the
+  // shared chain re-applies even after the user clicks Refresh.
+  const [initialShared, setInitialShared] = useState<SharedState | null>(null);
+  // New swaps and expansions made this session (reset on Refresh).
+  const [swapMap, setSwapMap] = useState<Record<string, [string, string]>>({});
+  const [expandedPaths, setExpandedPaths] = useState<Set<string>>(new Set());
+  const [showShareModal, setShowShareModal] = useState(false);
+
+  // Parse the ?state= param once on mount.
+  useEffect(() => {
+    const raw = searchParams.get('state');
+    if (raw) setInitialShared(decodeState(raw));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const computeTree = useCallback(() => {
     if (!persona) { setRootNode(null); return; }
-    // Build one level deep — the tree expands lazily from there as the user drills in.
     setRootNode(
       calculator.getRecipesDeep(decodedName, 1, ownedMapRef.current, maxedConfidants)
     );
     setSessionOwned(new Set());
+    setSwapMap({});
+    setExpandedPaths(new Set());
     setRefreshKey(k => k + 1);
   }, [persona, calculator, decodedName, maxedConfidants]);
 
-  // Compute on mount and whenever depth, target, or confidant settings change.
-  // Deliberately omits ownedMap so marking personas owned doesn't rebuild the tree.
   useEffect(() => { computeTree(); }, [computeTree]);
 
   const handleMarkDone = useCallback((personaName: string) => {
     setSessionOwned(prev => new Set([...prev, personaName]));
     setOwned(personaName, { owned: true });
   }, [setOwned]);
+
+  const handleRecipeSwap = useCallback((swapPath: string, recipe: [string, string]) => {
+    setSwapMap(prev => ({ ...prev, [swapPath]: recipe }));
+  }, []);
+
+  const handleExpand = useCallback((swapPath: string) => {
+    setExpandedPaths(prev => new Set([...prev, swapPath]));
+  }, []);
+
+  // Merge the URL-decoded initial state with anything the user has done this
+  // session, then encode into a shareable URL.
+  const buildShareUrl = useCallback((): string => {
+    const combinedSwaps = { ...(initialShared?.swaps ?? {}), ...swapMap };
+    const combinedExpanded = [
+      ...new Set([...(initialShared?.expanded ?? []), ...expandedPaths]),
+    ];
+
+    const state: SharedState = { swaps: combinedSwaps, expanded: combinedExpanded };
+    const hasContent = Object.keys(combinedSwaps).length > 0 || combinedExpanded.length > 0;
+
+    const base = `${window.location.origin}${window.location.pathname}#/fusion-tree/${encodeURIComponent(decodedName)}`;
+    const skillParam = requiredSkill ? `skill=${encodeURIComponent(requiredSkill)}` : '';
+
+    if (!hasContent) {
+      return skillParam ? `${base}?${skillParam}` : base;
+    }
+
+    const stateParam = `state=${encodeState(state)}`;
+    const queryString = skillParam ? `${skillParam}&${stateParam}` : stateParam;
+    return `${base}?${queryString}`;
+  }, [decodedName, requiredSkill, initialShared, swapMap, expandedPaths]);
+
+  // Derived share props passed down to FusionTree.
+  const initialSwaps = initialShared?.swaps;
+  const initialExpanded = useMemo(
+    () => initialShared ? new Set(initialShared.expanded) : undefined,
+    [initialShared]
+  );
 
   const summary = rootNode ? walkTree(rootNode, sessionOwned) : null;
   const baseCounts = summary
@@ -116,7 +195,13 @@ export function FusionPlan() {
             })()}
           </div>
         </div>
-        <div className="ml-auto flex items-center gap-3">
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            onClick={() => setShowShareModal(true)}
+            className="px-3 py-1 text-xs font-display font-bold uppercase tracking-wider border border-p5border text-gray-400 hover:text-p5white hover:border-p5red transition-colors"
+          >
+            Share
+          </button>
           <button
             onClick={computeTree}
             className="px-3 py-1 text-xs font-display font-bold uppercase tracking-wider border border-p5border text-gray-400 hover:text-p5white hover:border-p5red transition-colors"
@@ -168,7 +253,7 @@ export function FusionPlan() {
         </div>
       )}
 
-      {/* Tree: key forces full remount on refresh so swap state resets */}
+      {/* Tree */}
       {rootNode ? (
         <div className="overflow-x-auto pb-4">
           <div className="inline-block min-w-full">
@@ -180,6 +265,11 @@ export function FusionPlan() {
               onMarkDone={handleMarkDone}
               requiredSkill={requiredSkill}
               skillSources={skillSources}
+              path={decodedName}
+              onRecipeSwap={handleRecipeSwap}
+              onExpand={handleExpand}
+              initialSwaps={initialSwaps}
+              initialExpanded={initialExpanded}
             />
           </div>
         </div>
@@ -187,6 +277,13 @@ export function FusionPlan() {
         <div className="text-center text-gray-500 py-16 font-display">
           {persona.rare ? 'Rare personas cannot be fused.' : 'No fusion recipes found.'}
         </div>
+      )}
+
+      {showShareModal && (
+        <ShareModal
+          url={buildShareUrl()}
+          onClose={() => setShowShareModal(false)}
+        />
       )}
     </div>
   );

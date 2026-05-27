@@ -1,6 +1,6 @@
-﻿// Copyright (c) AemiliusXIV
+// Copyright (c) AemiliusXIV
 // SPDX-License-Identifier: Apache-2.0
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import type { FusionNode } from '../engine/types';
 import { useStore } from '../store/useStore';
@@ -127,21 +127,33 @@ interface FusionTreeProps {
   onMarkDone: (name: string) => void;
   requiredSkill?: string;
   skillSources?: Set<string>;
+  // Path from root to this node, e.g. "Yoshitsune/Kali/Sui-Ki". Used as the
+  // map key for swap state so the same persona at two separate branches is
+  // tracked independently.
+  path: string;
+  onRecipeSwap?: (path: string, recipe: [string, string]) => void;
+  onExpand?: (path: string) => void;
+  initialSwaps?: Record<string, [string, string]>;
+  initialExpanded?: Set<string>;
 }
 
-export function FusionTree({ node, isRoot = false, sessionOwned, onMarkDone, requiredSkill, skillSources }: FusionTreeProps) {
+export function FusionTree({
+  node, isRoot = false, sessionOwned, onMarkDone, requiredSkill, skillSources,
+  path, onRecipeSwap, onExpand, initialSwaps, initialExpanded,
+}: FusionTreeProps) {
   const { calculator, personaMap, ownedMap, maxedConfidants } = useStore();
   const [currentNode, setCurrentNode] = useState(node);
-  // Root's children are shown immediately; all other nodes start collapsed.
   const [expanded, setExpanded] = useState(isRoot);
-  // Tracks whether we tried to expand and found no recipe.
   const [noRecipe, setNoRecipe] = useState(false);
+  // Ensures the restoration effect only fires once per mount.
+  const hasAppliedInitial = useRef(false);
 
   const isOwnedNow = currentNode.owned || sessionOwned.has(currentNode.persona) || !!ownedMap[currentNode.persona]?.owned;
 
-  const handleSwap = useCallback((recipe: [string, string]) => {
+  // reportUp=true for user interactions; false when restoring from a shared URL
+  // so the already-encoded state isn't double-counted in the share map.
+  const handleSwap = useCallback((recipe: [string, string], reportUp = true) => {
     if (!personaMap[recipe[0]] || !personaMap[recipe[1]]) return;
-    // Rebuild one level deep for the swapped ingredients; they can be expanded further if needed.
     const newChildren: [FusionNode, FusionNode] = [
       calculator.getRecipesDeep(recipe[0], 1, ownedMap, maxedConfidants),
       calculator.getRecipesDeep(recipe[1], 1, ownedMap, maxedConfidants),
@@ -155,14 +167,14 @@ export function FusionTree({ node, isRoot = false, sessionOwned, onMarkDone, req
         .concat([prev.recipe!]),
     }));
     setExpanded(true);
-  }, [calculator, personaMap, ownedMap, maxedConfidants]);
+    if (reportUp) onRecipeSwap?.(path, recipe);
+  }, [calculator, personaMap, ownedMap, maxedConfidants, path, onRecipeSwap]);
 
-  const handleToggle = useCallback(() => {
+  const handleToggle = useCallback((reportUp = true) => {
     if (expanded) {
       setExpanded(false);
       return;
     }
-    // Children not loaded yet — fetch one level on demand.
     if (!currentNode.children) {
       const loaded = calculator.getRecipesDeep(currentNode.persona, 1, ownedMap, maxedConfidants);
       if (loaded.children) {
@@ -174,23 +186,43 @@ export function FusionTree({ node, isRoot = false, sessionOwned, onMarkDone, req
         }));
         setNoRecipe(false);
       } else {
-        // Persona has no recipe — it's a base persona, hide the toggle.
         setNoRecipe(true);
         return;
       }
     }
     setExpanded(true);
-  }, [expanded, currentNode, calculator, ownedMap, maxedConfidants]);
+    if (reportUp) onExpand?.(path);
+  }, [expanded, currentNode, calculator, ownedMap, maxedConfidants, path, onExpand]);
+
+  // Restore recipe selections and expansion state from a shared URL. Runs once
+  // per mount — empty dep array is intentional; we only want this on the
+  // initial render, not on re-renders triggered by user interaction.
+  useEffect(() => {
+    if (isRoot || hasAppliedInitial.current) return;
+    hasAppliedInitial.current = true;
+
+    const myRecipe = initialSwaps?.[path];
+    const shouldExpand = initialExpanded?.has(path);
+
+    if (myRecipe) {
+      handleSwap(myRecipe, false);
+    } else if (shouldExpand) {
+      handleToggle(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const showChildren = expanded && !!currentNode.children && !isOwnedNow;
-  // Show toggle on any non-root, non-owned node that hasn't been confirmed as a base persona.
   const showToggle = !isRoot && !isOwnedNow && !noRecipe;
+
+  const childPath0 = currentNode.children ? `${path}/${currentNode.children[0].persona}` : '';
+  const childPath1 = currentNode.children ? `${path}/${currentNode.children[1].persona}` : '';
 
   return (
     <div className="flex flex-col items-center">
       <NodeCard
         node={currentNode}
-        onSwapRecipe={handleSwap}
+        onSwapRecipe={recipe => handleSwap(recipe)}
         onMarkDone={onMarkDone}
         sessionOwned={sessionOwned}
         isRoot={isRoot}
@@ -204,7 +236,7 @@ export function FusionTree({ node, isRoot = false, sessionOwned, onMarkDone, req
 
       {showToggle && (
         <button
-          onClick={handleToggle}
+          onClick={() => handleToggle()}
           className="mt-1.5 text-[10px] font-display uppercase tracking-widest border border-p5border px-2 py-0.5 transition-colors text-gray-500 hover:border-p5red hover:text-p5red"
         >
           {expanded ? '▲ hide' : '▼ show recipe'}
@@ -223,6 +255,11 @@ export function FusionTree({ node, isRoot = false, sessionOwned, onMarkDone, req
                 onMarkDone={onMarkDone}
                 requiredSkill={requiredSkill}
                 skillSources={skillSources}
+                path={childPath0}
+                onRecipeSwap={onRecipeSwap}
+                onExpand={onExpand}
+                initialSwaps={initialSwaps}
+                initialExpanded={initialExpanded}
               />
             </div>
             <div className="flex flex-col items-center pt-4">
@@ -232,6 +269,11 @@ export function FusionTree({ node, isRoot = false, sessionOwned, onMarkDone, req
                 onMarkDone={onMarkDone}
                 requiredSkill={requiredSkill}
                 skillSources={skillSources}
+                path={childPath1}
+                onRecipeSwap={onRecipeSwap}
+                onExpand={onExpand}
+                initialSwaps={initialSwaps}
+                initialExpanded={initialExpanded}
               />
             </div>
           </div>
