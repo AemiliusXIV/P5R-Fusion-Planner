@@ -1,4 +1,4 @@
-﻿// Copyright (c) AemiliusXIV
+// Copyright (c) AemiliusXIV
 // SPDX-License-Identifier: Apache-2.0
 import { useRef, useState } from 'react';
 import { useStore } from '../store/useStore';
@@ -198,80 +198,12 @@ export function Settings() {
         </div>
       </section>
 
-      {/* ── Confidants ── */}
-      <section className="card-p5 p-4">
-        <div className="flex items-center justify-between mb-1">
-          <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm">Maxed Confidants</h2>
-          <button
-            onClick={() => setAllConfidants(!allConfidantsMaxed)}
-            className="text-xs font-display font-bold tracking-wider uppercase border border-p5border text-gray-500 hover:border-p5red hover:text-p5red px-2 py-1 transition-colors"
-          >
-            {allConfidantsMaxed ? 'Deselect All' : 'Select All'}
-          </button>
-        </div>
-        <p className="text-xs text-gray-500 font-display mb-3">
-          Mark confidants you've reached max rank with. The Fusion Tree Planner will flag
-          personas that require a specific confidant rank as locked or unlocked accordingly.
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-          {confidants.map(([arcana, label]) => (
-            <label key={arcana} className="flex items-center gap-2 py-1.5 cursor-pointer group">
-              <input
-                type="checkbox"
-                checked={!!maxedConfidants[arcana]}
-                onChange={e => setMaxedConfidant(arcana, e.target.checked)}
-                className="accent-p5red"
-              />
-              <span className={`text-sm font-display transition-colors ${maxedConfidants[arcana] ? 'text-p5white' : 'text-gray-500 group-hover:text-gray-300'}`}>
-                {label}
-              </span>
-            </label>
-          ))}
-        </div>
-      </section>
-
-      {/* ── DLC personas ── */}
-      <section className="card-p5 p-4">
-        <div className="flex items-center justify-between mb-1">
-          <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm">DLC Personas</h2>
-          <button
-            onClick={() => setAllDlcEnabled(!allDlcEnabled)}
-            className="text-xs font-display font-bold tracking-wider uppercase border border-p5border text-gray-500 hover:border-p5red hover:text-p5red px-2 py-1 transition-colors"
-          >
-            {allDlcEnabled ? 'Disable All' : 'Enable All'}
-          </button>
-        </div>
-        <p className="text-xs text-gray-500 font-display mb-3">
-          Enable DLC persona packs you own. Enabled personas appear in the list and can be
-          used as ingredients in fusion recipes. The fusion engine rebuilds each time you toggle a group.
-        </p>
-        <div className="flex flex-col gap-2">
-          {dlcPersona.map((group, i) => (
-            <div key={i} className="flex gap-3 flex-wrap border-b border-p5border pb-2 last:border-0">
-              {group.map(pName => (
-                <label key={pName} className="flex items-center gap-2 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={!!dlcEnabled[pName]}
-                    onChange={e => setDlcEnabled(pName, e.target.checked)}
-                    className="accent-p5red"
-                  />
-                  <span className={`text-sm font-display transition-colors ${dlcEnabled[pName] ? 'text-p5white' : 'text-gray-500 group-hover:text-gray-300'}`}>
-                    {pName}
-                  </span>
-                </label>
-              ))}
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* ── Companion app ── */}
       <section className="card-p5 p-4">
         <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-1">Companion App</h2>
         <p className="text-xs text-gray-500 font-display mb-3">
-          The companion app reads your P5R save file directly and populates your owned persona
-          list automatically — no manual toggling needed. Runs on Windows alongside the game.
+          The companion app reads your P5R PC save file directly and marks your owned personas
+          automatically — no manual toggling needed. Runs on Windows alongside the game.
         </p>
         <a
           href="https://github.com/AemiliusXIV/P5RFusionCalc/releases"
@@ -351,6 +283,91 @@ export function Settings() {
             )}
           </div>
         </div>
+      </section>
+
+      {/* ── Confidants ── */}
+      <section className="card-p5 p-4">
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm">Maxed Confidants</h2>
+          <button
+            onClick={() => setAllConfidants(!allConfidantsMaxed)}
+            className="text-xs font-display font-bold tracking-wider uppercase border border-p5border text-gray-500 hover:border-p5red hover:text-p5red px-2 py-1 transition-colors"
+          >
+            {allConfidantsMaxed ? 'Deselect All' : 'Select All'}
+          </button>
+        </div>
+        <p className="text-xs text-gray-500 font-display mb-3">
+          Mark confidants you've reached max rank with. The Fusion Tree Planner will flag
+          personas that require a specific confidant rank as locked or unlocked accordingly.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+          {confidants.map(([arcana, label]) => (
+            <label key={arcana} className="flex items-center gap-2 py-1.5 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={!!maxedConfidants[arcana]}
+                onChange={e => setMaxedConfidant(arcana, e.target.checked)}
+                className="accent-p5red"
+              />
+              <span className={`text-sm font-display transition-colors ${maxedConfidants[arcana] ? 'text-p5white' : 'text-gray-500 group-hover:text-gray-300'}`}>
+                {label}
+              </span>
+            </label>
+          ))}
+        </div>
+      </section>
+
+      {/* ── DLC personas ── */}
+      <section className="card-p5 p-4">
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm">DLC Personas</h2>
+          <button
+            onClick={() => setAllDlcEnabled(!allDlcEnabled)}
+            className="text-xs font-display font-bold tracking-wider uppercase border border-p5border text-gray-500 hover:border-p5red hover:text-p5red px-2 py-1 transition-colors"
+          >
+            {allDlcEnabled ? 'Disable All' : 'Enable All'}
+          </button>
+        </div>
+        <p className="text-xs text-gray-500 font-display mb-3">
+          Enable DLC persona packs you own. Enabled personas appear in the list and can be
+          used as ingredients in fusion recipes. The fusion engine rebuilds each time you toggle a group.
+        </p>
+        <div className="flex flex-col gap-2">
+          {dlcPersona.map((group, i) => (
+            <div key={i} className="flex gap-3 flex-wrap border-b border-p5border pb-2 last:border-0">
+              {group.map(pName => (
+                <label key={pName} className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={!!dlcEnabled[pName]}
+                    onChange={e => setDlcEnabled(pName, e.target.checked)}
+                    className="accent-p5red"
+                  />
+                  <span className={`text-sm font-display transition-colors ${dlcEnabled[pName] ? 'text-p5white' : 'text-gray-500 group-hover:text-gray-300'}`}>
+                    {pName}
+                  </span>
+                </label>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Report an issue ── */}
+      <section className="card-p5 p-4">
+        <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-1">Found a Bug?</h2>
+        <p className="text-xs text-gray-500 font-display mb-3">
+          Something wrong — missing data, broken fusion recipes, or anything else? File a report on GitHub
+          and include as much detail as you can.
+        </p>
+        <a
+          href="https://github.com/AemiliusXIV/P5RFusionCalc/issues"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-ghost text-sm inline-block"
+        >
+          Report an issue ↗
+        </a>
       </section>
     </div>
   );

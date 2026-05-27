@@ -147,7 +147,7 @@ export function PersonaList() {
               >
                 companion app ↗
               </a>
-              {' '}can read your P5R save file and populate this list automatically — no manual marking needed.
+              {' '}reads your P5R PC save file and marks your owned personas automatically — no manual toggling needed.
             </span>
           </div>
           <button
