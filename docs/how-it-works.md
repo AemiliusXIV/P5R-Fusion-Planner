@@ -78,5 +78,19 @@ Specifically, it does **not** read:
 
 ---
 
+## Security warnings
+
+When you first run the companion, Windows SmartScreen or your antivirus may show a warning. Neither means anything is wrong. Here's what's actually happening:
+
+**SmartScreen (Windows)**
+SmartScreen checks whether a downloaded executable is signed with a publisher certificate. This one isn't, because certificates cost several hundred dollars a year. Unsigned apps from the internet always trigger the prompt regardless of what they do. Click **More info → Run anyway** to proceed.
+
+**Antivirus flags**
+Some antivirus tools flag self-contained .NET executables because they're large bundled files (the app ships with its own copy of the .NET runtime included) and because the app reads files from disk. Both are normal and expected for this type of application. If you want to verify the file yourself, the full source code is in this repo.
+
+For the full picture of what the app reads and what it does with it, see the [Privacy](#privacy) section above.
+
+---
+
 Web app: https://aemiliusxiv.github.io/P5RFusionCalc/
 Source code: https://github.com/AemiliusXIV/P5RFusionCalc

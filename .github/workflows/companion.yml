@@ -64,23 +64,18 @@ jobs:
 
             **Security warnings on first launch**
 
-            Windows SmartScreen or your antivirus may flag the file when you first run it.
-            This is normal for any unsigned application downloaded from the internet — it is
-            not a sign that something is wrong. The app reads your save file locally and does
-            not connect to the internet, modify any files, or send data anywhere.
-            If you want to check exactly what it does before running it, the full source is
-            here in this repo and the [How it works](https://github.com/AemiliusXIV/P5RFusionCalc/blob/master/docs/how-it-works.md)
-            guide covers it in plain language.
+            Windows or your antivirus may flag this on first run. It happens because the app
+            isn't signed with a publisher certificate, and because it reads files from disk,
+            not because anything is wrong. The app only reads your P5R save file locally and
+            sends nothing over the network. See the guide above for the full breakdown.
 
-            To get past SmartScreen: click **More info** → **Run anyway**.
+            To get past the SmartScreen prompt: **More info → Run anyway**.
 
             ---
 
-            **What's new in this release**
+            **What's new**
 
-            - Fixed: previous release (v1.0.0) would silently fail to open on machines where
-              the app was downloaded as a single file. WPF's native graphics libraries were not
-              being bundled into the EXE — they are now.
+            - Fixed an issue where the app would silently fail to open after downloading.
 
       - name: Upload as artifact (manual runs)
         if: github.event_name == 'workflow_dispatch'
