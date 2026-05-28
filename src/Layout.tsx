@@ -1,7 +1,7 @@
 ﻿// Copyright (c) AemiliusXIV
 // SPDX-License-Identifier: Apache-2.0
 import { Suspense } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, ScrollRestoration } from 'react-router-dom';
 import { NavBar } from './components/NavBar';
 import { useStore } from './store/useStore';
 
@@ -27,6 +27,8 @@ export function Layout() {
           <Outlet />
         </Suspense>
       </main>
+      {/* New navigations land at the top; back/forward restores prior scroll. */}
+      <ScrollRestoration />
     </div>
   );
 }

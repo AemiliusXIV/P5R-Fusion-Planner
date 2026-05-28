@@ -13,6 +13,7 @@ export function Settings() {
     maxedConfidants, setMaxedConfidant, setAllConfidants,
     displaySize, setDisplaySize,
     colorMode, setColorMode,
+    fusionTreeAutoExpand, setFusionTreeAutoExpand,
     exportOwned, importOwned,
     ownedMap,
     lastImportedAt,
@@ -168,6 +169,32 @@ export function Settings() {
               </div>
             </label>
           ))}
+        </div>
+
+        <div className="mt-5 border-t border-p5border pt-4">
+          <h3 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-1">Fusion Tree</h3>
+          <p className="text-xs text-gray-500 font-display mb-3">
+            Controls whether the fusion tree opens with a few layers visible, or
+            starts collapsed so you can drill down node by node.
+          </p>
+          <label className="flex items-start gap-3 cursor-pointer group">
+            <input
+              type="checkbox"
+              checked={fusionTreeAutoExpand}
+              onChange={e => setFusionTreeAutoExpand(e.target.checked)}
+              className="accent-p5red mt-0.5"
+            />
+            <div>
+              <span className={`font-display font-bold text-sm ${fusionTreeAutoExpand ? 'text-p5white' : 'text-gray-400 group-hover:text-p5white'} transition-colors`}>
+                Expand the first few layers by default
+              </span>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Shows the chain a few levels deep on load. When off, each layer
+                is hidden until you click <strong>show recipe</strong>. Either way,
+                you can always expand further manually.
+              </p>
+            </div>
+          </label>
         </div>
 
         <div className="mt-5 border-t border-p5border pt-4">

@@ -16,7 +16,7 @@ interface NodeCardProps {
   skillSources?: Set<string>;
 }
 
-function NodeCard({ node, onSwapRecipe, onMarkDone, sessionOwned, isRoot, requiredSkill, skillSources }: NodeCardProps) {
+export function NodeCard({ node, onSwapRecipe, onMarkDone, sessionOwned, isRoot, requiredSkill, skillSources }: NodeCardProps) {
   const { ownedMap } = useStore();
   const isOwnedNow = node.owned || sessionOwned.has(node.persona) || !!ownedMap[node.persona]?.owned;
   const wishlist = !isOwnedNow && !!ownedMap[node.persona]?.wishlist;
@@ -141,9 +141,11 @@ export function FusionTree({
   node, isRoot = false, sessionOwned, onMarkDone, requiredSkill, skillSources,
   path, onRecipeSwap, onExpand, initialSwaps, initialExpanded,
 }: FusionTreeProps) {
-  const { calculator, personaMap, ownedMap, maxedConfidants } = useStore();
+  const { calculator, personaMap, ownedMap, maxedConfidants, fusionTreeAutoExpand } = useStore();
   const [currentNode, setCurrentNode] = useState(node);
-  const [expanded, setExpanded] = useState(isRoot);
+  // Open by default at the root, or whenever the tree was pre-built deep
+  // (auto-expand setting on) so children are already populated.
+  const [expanded, setExpanded] = useState(isRoot || (fusionTreeAutoExpand && !!node.children));
   const [noRecipe, setNoRecipe] = useState(false);
   // Ensures the restoration effect only fires once per mount.
   const hasAppliedInitial = useRef(false);
@@ -176,6 +178,9 @@ export function FusionTree({
       return;
     }
     if (!currentNode.children) {
+      // Manual reveals load one layer at a time. Auto-expand mode already
+      // builds the full chain upfront, so this only fires on rare chains
+      // that exceed the build cap.
       const loaded = calculator.getRecipesDeep(currentNode.persona, 1, ownedMap, maxedConfidants);
       if (loaded.children) {
         setCurrentNode(prev => ({
@@ -213,7 +218,10 @@ export function FusionTree({
   }, []);
 
   const showChildren = expanded && !!currentNode.children && !isOwnedNow;
-  const showToggle = !isRoot && !isOwnedNow && !noRecipe;
+  // In auto-expand mode the whole chain is already shown to its natural ends,
+  // so there's nothing to toggle. The button only belongs to manual mode,
+  // where each layer is revealed on demand.
+  const showToggle = !isRoot && !isOwnedNow && !noRecipe && !fusionTreeAutoExpand;
 
   const childPath0 = currentNode.children ? `${path}/${currentNode.children[0].persona}` : '';
   const childPath1 = currentNode.children ? `${path}/${currentNode.children[1].persona}` : '';
@@ -229,10 +237,6 @@ export function FusionTree({
         requiredSkill={requiredSkill}
         skillSources={skillSources}
       />
-
-      {isOwnedNow && !isRoot && (
-        <div className="mt-1 text-[10px] text-green-400 font-display font-bold">OWNED — stop here</div>
-      )}
 
       {showToggle && (
         <button

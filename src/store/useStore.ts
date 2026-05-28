@@ -16,6 +16,7 @@ interface SettingsState {
   maxedConfidants: Record<string, boolean>;
   displaySize: DisplaySize;
   colorMode: ColorMode;
+  fusionTreeAutoExpand: boolean;
   completedStrengthRequests: Record<number, boolean>;
   companionBannerDismissed: boolean;
 }
@@ -44,6 +45,7 @@ interface AppState extends SettingsState {
   setAllConfidants(maxed: boolean): void;
   setDisplaySize(v: DisplaySize): void;
   setColorMode(v: ColorMode): void;
+  setFusionTreeAutoExpand(v: boolean): void;
   setStrengthComplete(rank: number, complete: boolean): void;
   dismissCompanionBanner(): void;
 
@@ -81,6 +83,7 @@ export const useStore = create<AppState>()(
       maxedConfidants: {},
       displaySize: 'normal',
       colorMode: 'p5',
+      fusionTreeAutoExpand: true,
       completedStrengthRequests: {},
       companionBannerDismissed: false,
 
@@ -148,6 +151,7 @@ export const useStore = create<AppState>()(
 
       setDisplaySize(v) { set({ displaySize: v }); },
       setColorMode(v) { set({ colorMode: v }); },
+      setFusionTreeAutoExpand(v) { set({ fusionTreeAutoExpand: v }); },
       dismissCompanionBanner() { set({ companionBannerDismissed: true }); },
       setStrengthComplete(rank, complete) {
         set(state => ({
@@ -175,6 +179,7 @@ export const useStore = create<AppState>()(
         maxedConfidants: state.maxedConfidants,
         displaySize: state.displaySize,
         colorMode: state.colorMode,
+        fusionTreeAutoExpand: state.fusionTreeAutoExpand,
         completedStrengthRequests: state.completedStrengthRequests,
         companionBannerDismissed: state.companionBannerDismissed,
       }),

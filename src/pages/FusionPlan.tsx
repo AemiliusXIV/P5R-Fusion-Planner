@@ -5,9 +5,65 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useStore } from '../store/useStore';
 import { skillMapRoyal } from '../engine/initData';
 import { FusionTree } from '../components/FusionTree';
+import { FusionTreeAuto } from '../components/FusionTreeAuto';
 import { ShareModal } from '../components/ShareModal';
 import { elemColor } from '../utils/skillUtils';
-import type { FusionNode } from '../engine/types';
+import type { FusionNode, OwnedMap } from '../engine/types';
+import type { FusionCalculator } from '../engine/FusionCalculator';
+
+// Backstop depth for auto-expand. Branches usually terminate earlier at owned
+// personas; this just stops a deep target from ballooning into hundreds of
+// nodes when a branch never reaches the collection.
+const AUTO_DEPTH = 6;
+
+// Immutably replace the node at `path`, rebuilding the parent chain so React
+// sees new references. Path segments are persona names from the root down.
+function updateNodeAtPath(
+  root: FusionNode,
+  path: string,
+  updater: (n: FusionNode) => FusionNode
+): FusionNode {
+  const segs = path.split('/');
+  const rec = (node: FusionNode, idx: number): FusionNode => {
+    if (idx === segs.length - 1) return updater(node);
+    if (!node.children) return node;
+    const nextName = segs[idx + 1];
+    const ci = node.children[0].persona === nextName ? 0
+      : node.children[1].persona === nextName ? 1 : -1;
+    if (ci === -1) return node;
+    const newChild = rec(node.children[ci], idx + 1);
+    const children: [FusionNode, FusionNode] = ci === 0
+      ? [newChild, node.children[1]]
+      : [node.children[0], newChild];
+    return { ...node, children };
+  };
+  return rec(root, 0);
+}
+
+// Swap a node's recipe and rebuild its subtree from the two new ingredients.
+function rebuildWithRecipe(
+  node: FusionNode,
+  recipe: [string, string],
+  remaining: number,
+  calculator: FusionCalculator,
+  ownedMap: OwnedMap,
+  maxedConfidants: Record<string, boolean>
+): FusionNode {
+  const a = calculator.getRecipesDeep(recipe[0], remaining, ownedMap, maxedConfidants);
+  const b = calculator.getRecipesDeep(recipe[1], remaining, ownedMap, maxedConfidants);
+  return {
+    ...node,
+    recipe,
+    children: [a, b],
+    alternatives: node.alternatives
+      .filter(x => !(x[0] === recipe[0] && x[1] === recipe[1]))
+      .concat(node.recipe ? [node.recipe] : []),
+  };
+}
+
+function depthOfPath(path: string): number {
+  return path.split('/').length - 1;
+}
 
 // Walk the frozen tree to count fusions still needed and identify base personas.
 // Stops at nodes that are owned (either at build time or marked this session).
@@ -56,7 +112,7 @@ export function FusionPlan() {
   const decodedName = name ? decodeURIComponent(name) : '';
   const requiredSkill = searchParams.get('skill') ?? undefined;
   const {
-    personaMap, calculator, ownedMap, maxedConfidants, setOwned,
+    personaMap, calculator, ownedMap, maxedConfidants, setOwned, fusionTreeAutoExpand,
   } = useStore();
 
   const persona = personaMap[decodedName];
@@ -72,9 +128,15 @@ export function FusionPlan() {
   const ownedMapRef = useRef(ownedMap);
   ownedMapRef.current = ownedMap;
 
+  // Used to centre the horizontally-overflowing tree on the root node so the
+  // root is visible without the user hunting for it on first render.
+  const treeScrollRef = useRef<HTMLDivElement>(null);
+
   const [rootNode, setRootNode] = useState<FusionNode | null>(null);
   const [sessionOwned, setSessionOwned] = useState<Set<string>>(new Set());
   const [refreshKey, setRefreshKey] = useState(0);
+  // Guards one-time application of shared swaps onto the auto-expand tree.
+  const sharedAppliedRef = useRef(false);
 
   // ── Share state ──────────────────────────────────────────────────────────
   // Decoded once from the URL on mount; persists across refreshes so the
@@ -94,16 +156,37 @@ export function FusionPlan() {
 
   const computeTree = useCallback(() => {
     if (!persona) { setRootNode(null); return; }
+    // Auto-expand mode: branches terminate as soon as they bottom out at an
+    // owned persona (those become leaves in getRecipesDeep). The depth value
+    // is only a backstop for branches that never reach the owned collection,
+    // so a deep target doesn't explode into hundreds of nodes. Six layers is
+    // plenty for a typical chain; rare targets like Metatron stop at the cap
+    // and the remaining ingredients show as bases still to acquire.
+    const depth = fusionTreeAutoExpand ? AUTO_DEPTH : 1;
     setRootNode(
-      calculator.getRecipesDeep(decodedName, 1, ownedMapRef.current, maxedConfidants)
+      calculator.getRecipesDeep(decodedName, depth, ownedMapRef.current, maxedConfidants)
     );
     setSessionOwned(new Set());
     setSwapMap({});
     setExpandedPaths(new Set());
+    sharedAppliedRef.current = false;
     setRefreshKey(k => k + 1);
-  }, [persona, calculator, decodedName, maxedConfidants]);
+  }, [persona, calculator, decodedName, maxedConfidants, fusionTreeAutoExpand]);
 
   useEffect(() => { computeTree(); }, [computeTree]);
+
+  // After the tree renders, centre the overflowing container on the root node.
+  // Without this, deep trees push the root off-screen to the right because
+  // each level is centred on the very wide bottom row of leaves.
+  useEffect(() => {
+    if (!rootNode || !treeScrollRef.current) return;
+    const el = treeScrollRef.current;
+    // Defer to next frame so layout has settled.
+    const raf = requestAnimationFrame(() => {
+      el.scrollLeft = Math.max(0, (el.scrollWidth - el.clientWidth) / 2);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [rootNode, refreshKey]);
 
   const handleMarkDone = useCallback((personaName: string) => {
     setSessionOwned(prev => new Set([...prev, personaName]));
@@ -117,6 +200,39 @@ export function FusionPlan() {
   const handleExpand = useCallback((swapPath: string) => {
     setExpandedPaths(prev => new Set([...prev, swapPath]));
   }, []);
+
+  // Auto-expand mode keeps the whole tree in one place (rootNode) rather than
+  // in per-node component state, so swaps update it here by path.
+  const handleSwapAuto = useCallback((swapPath: string, recipe: [string, string]) => {
+    const remaining = Math.max(1, AUTO_DEPTH - depthOfPath(swapPath));
+    setRootNode(prev => prev
+      ? updateNodeAtPath(prev, swapPath, n =>
+          rebuildWithRecipe(n, recipe, remaining, calculator, ownedMapRef.current, maxedConfidants))
+      : prev);
+    setSwapMap(prev => ({ ...prev, [swapPath]: recipe }));
+  }, [calculator, maxedConfidants]);
+
+  // Re-apply swaps decoded from a shared URL onto the auto-expand tree once it
+  // has been built. Recursive (manual) mode handles this per-node instead.
+  useEffect(() => {
+    if (!fusionTreeAutoExpand || sharedAppliedRef.current) return;
+    if (!rootNode || !initialShared) return;
+    sharedAppliedRef.current = true;
+    const swaps = initialShared.swaps ?? {};
+    const paths = Object.keys(swaps);
+    if (paths.length === 0) return;
+    setRootNode(prev => {
+      let tree = prev;
+      if (!tree) return prev;
+      // Shallow paths first so a parent swap doesn't discard a child swap.
+      for (const p of paths.sort((a, b) => depthOfPath(a) - depthOfPath(b))) {
+        const remaining = Math.max(1, AUTO_DEPTH - depthOfPath(p));
+        tree = updateNodeAtPath(tree, p, n =>
+          rebuildWithRecipe(n, swaps[p], remaining, calculator, ownedMapRef.current, maxedConfidants));
+      }
+      return tree;
+    });
+  }, [rootNode, initialShared, fusionTreeAutoExpand, calculator, maxedConfidants]);
 
   // Merge the URL-decoded initial state with anything the user has done this
   // session, then encode into a shareable URL.
@@ -255,24 +371,38 @@ export function FusionPlan() {
 
       {/* Tree */}
       {rootNode ? (
-        <div className="overflow-x-auto pb-4">
-          <div className="inline-block min-w-full">
-            <FusionTree
-              key={refreshKey}
-              node={rootNode}
-              isRoot
-              sessionOwned={sessionOwned}
-              onMarkDone={handleMarkDone}
-              requiredSkill={requiredSkill}
-              skillSources={skillSources}
-              path={decodedName}
-              onRecipeSwap={handleRecipeSwap}
-              onExpand={handleExpand}
-              initialSwaps={initialSwaps}
-              initialExpanded={initialExpanded}
-            />
+        fusionTreeAutoExpand ? (
+          // Auto mode manages its own fit-to-width scaling and overflow.
+          <FusionTreeAuto
+            key={refreshKey}
+            root={rootNode}
+            rootPath={decodedName}
+            sessionOwned={sessionOwned}
+            onMarkDone={handleMarkDone}
+            onSwap={handleSwapAuto}
+            requiredSkill={requiredSkill}
+            skillSources={skillSources}
+          />
+        ) : (
+          <div ref={treeScrollRef} className="overflow-x-auto pb-4">
+            <div className="inline-block min-w-full">
+              <FusionTree
+                key={refreshKey}
+                node={rootNode}
+                isRoot
+                sessionOwned={sessionOwned}
+                onMarkDone={handleMarkDone}
+                requiredSkill={requiredSkill}
+                skillSources={skillSources}
+                path={decodedName}
+                onRecipeSwap={handleRecipeSwap}
+                onExpand={handleExpand}
+                initialSwaps={initialSwaps}
+                initialExpanded={initialExpanded}
+              />
+            </div>
           </div>
-        </div>
+        )
       ) : (
         <div className="text-center text-gray-500 py-16 font-display">
           {persona.rare ? 'Rare personas cannot be fused.' : 'No fusion recipes found.'}
