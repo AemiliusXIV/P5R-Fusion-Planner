@@ -38,6 +38,14 @@ jobs:
           $version = "${{ github.ref_name }}" -replace '^companion-v', ''
           Move-Item publish/P5RCompanion.exe "publish/P5RCompanion-$version.exe"
 
+      - name: Compute checksum
+        id: hash
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}" -replace '^companion-v', ''
+          $sha = (Get-FileHash "publish/P5RCompanion-$version.exe" -Algorithm SHA256).Hash.ToLower()
+          "sha256=$sha" >> $env:GITHUB_OUTPUT
+
       - name: Upload to release
         if: startsWith(github.ref, 'refs/tags/companion-v')
         uses: softprops/action-gh-release@v2
@@ -60,6 +68,12 @@ jobs:
             For a full walkthrough, details on what data is read, and a privacy breakdown,
             see the [How it works](https://github.com/AemiliusXIV/P5R-Fusion-Planner/blob/master/docs/how-it-works.md) guide.
 
+            **Only download this from the [official releases page](https://github.com/AemiliusXIV/P5R-Fusion-Planner/releases).**
+            The app makes no network connections, so it can't send your data anywhere; a copy
+            from anywhere else could be altered to do so. Verify your download with the checksum below.
+
+            SHA-256: `${{ steps.hash.outputs.sha256 }}`
+
             ---
 
             **Security warnings on first launch**
@@ -75,7 +89,9 @@ jobs:
 
             **What's new**
 
-            - Fixed an issue where the app would silently fail to open after downloading.
+            - Updated all in-app links to the project's new address.
+            - Footer now credits the developer and links to the official repo.
+            - Added a reminder to download only from the official releases page, plus a SHA-256 checksum to verify your download.
 
       - name: Upload as artifact (manual runs)
         if: github.event_name == 'workflow_dispatch'

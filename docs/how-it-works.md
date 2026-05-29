@@ -88,6 +88,9 @@ SmartScreen checks whether a downloaded executable is signed with a publisher ce
 **Antivirus flags**
 Some antivirus tools flag self-contained .NET executables because they're large bundled files (the app ships with its own copy of the .NET runtime included) and because the app reads files from disk. Both are normal and expected for this type of application. If you want to verify the file yourself, the full source code is in this repo.
 
+**Download only from the official source**
+Get the companion only from the [official releases page](https://github.com/AemiliusXIV/P5R-Fusion-Planner/releases). The app makes no network connections, so it cannot send your data anywhere; a copy obtained from somewhere else could be altered to do exactly that. Every release lists a SHA-256 checksum, so you can confirm the file you downloaded matches the published build before running it.
+
 For the full picture of what the app reads and what it does with it, see the [Privacy](#privacy) section above.
 
 ---
