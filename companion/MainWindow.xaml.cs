@@ -9,7 +9,7 @@ namespace P5RCompanion;
 
 public partial class MainWindow : Window
 {
-    private const string PwaBaseUrl = "https://aemiliusxiv.github.io/P5RFusionCalc";
+    private const string PwaBaseUrl = "https://aemiliusxiv.github.io/P5R-Fusion-Planner";
 
     private string? _saveFolder;
     private string? _lastGeneratedJson;

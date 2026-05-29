@@ -140,14 +140,14 @@ export function PersonaList() {
             <span className="text-xs text-gray-400 font-display">
               The{' '}
               <a
-                href="https://github.com/AemiliusXIV/P5RFusionCalc/releases"
+                href="https://github.com/AemiliusXIV/P5R-Fusion-Planner/releases"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-p5white hover:text-p5red transition-colors font-bold"
               >
                 companion app ↗
               </a>
-              {' '}reads your P5R PC save file and marks your owned personas automatically — no manual toggling needed.
+              {' '}reads your P5R PC save file and marks your owned personas automatically, no manual toggling needed.
             </span>
           </div>
           <button

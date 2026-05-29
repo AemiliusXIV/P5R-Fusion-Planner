@@ -46,7 +46,7 @@ jobs:
           name: Save Reader ${{ github.ref_name }}
           prerelease: false
           body: |
-            Companion save reader for the [P5R Fusion Planner](https://aemiliusxiv.github.io/P5RFusionCalc/).
+            Companion save reader for the [P5R Fusion Planner](https://aemiliusxiv.github.io/P5R-Fusion-Planner/).
 
             Reads your Persona 5 Royal PC save file and imports your owned personas
             into the planner automatically. No manual marking needed.
@@ -58,7 +58,7 @@ jobs:
             4. Click **Open in Browser** to import, or **Copy Link** to paste manually
 
             For a full walkthrough, details on what data is read, and a privacy breakdown,
-            see the [How it works](https://github.com/AemiliusXIV/P5RFusionCalc/blob/master/docs/how-it-works.md) guide.
+            see the [How it works](https://github.com/AemiliusXIV/P5R-Fusion-Planner/blob/master/docs/how-it-works.md) guide.
 
             ---
 

@@ -230,10 +230,10 @@ export function Settings() {
         <h2 className="font-display font-bold text-p5red uppercase tracking-widest text-sm mb-1">Companion App</h2>
         <p className="text-xs text-gray-500 font-display mb-3">
           The companion app reads your P5R PC save file directly and marks your owned personas
-          automatically — no manual toggling needed. Runs on Windows alongside the game.
+          automatically, no manual toggling needed. Runs on Windows alongside the game.
         </p>
         <a
-          href="https://github.com/AemiliusXIV/P5RFusionCalc/releases"
+          href="https://github.com/AemiliusXIV/P5R-Fusion-Planner/releases"
           target="_blank"
           rel="noopener noreferrer"
           className="btn-ghost text-sm inline-block"
@@ -388,7 +388,7 @@ export function Settings() {
           and include as much detail as you can.
         </p>
         <a
-          href="https://github.com/AemiliusXIV/P5RFusionCalc/issues"
+          href="https://github.com/AemiliusXIV/P5R-Fusion-Planner/issues"
           target="_blank"
           rel="noopener noreferrer"
           className="btn-ghost text-sm inline-block"

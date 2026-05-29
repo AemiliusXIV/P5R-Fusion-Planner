@@ -46,7 +46,7 @@ export function NavBar() {
         {/* Credit, always visible at bottom of sidebar */}
         <div className="p-4 border-t border-p5border shrink-0">
           <a
-            href="https://github.com/AemiliusXIV/P5RFusionCalc"
+            href="https://github.com/AemiliusXIV/P5R-Fusion-Planner"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[11px] text-gray-600 hover:text-p5red font-display tracking-wider transition-colors block"

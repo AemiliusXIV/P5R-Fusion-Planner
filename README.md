@@ -2,7 +2,7 @@
 
 A Persona 5 Royal fusion calculator and collection planner built as a modern PWA with a faithful P5 aesthetic.
 
-**Live app:** https://aemiliusxiv.github.io/P5RFusionCalc/
+**Live app:** https://aemiliusxiv.github.io/P5R-Fusion-Planner/
 
 ## Features
 
@@ -19,7 +19,7 @@ A Persona 5 Royal fusion calculator and collection planner built as a modern PWA
 
 A small Windows app that reads your P5R PC save file and imports your owned personas into the planner automatically. No manual marking needed.
 
-Download the `.exe` from [Releases](https://github.com/AemiliusXIV/P5RFusionCalc/releases).
+Download the `.exe` from [Releases](https://github.com/AemiliusXIV/P5R-Fusion-Planner/releases).
 
 See [docs/how-it-works.md](docs/how-it-works.md) for a full walkthrough, details on what data is read, and a privacy breakdown.
 

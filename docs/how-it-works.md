@@ -6,7 +6,7 @@ The P5R Fusion Planner is a browser tool for Persona 5 Royal. It covers every pe
 
 **Browsing personas.** Every persona in the game is listed with its stats, skills, elemental affinities, and arcana. You can filter by name, arcana, or whether you own or wishlist it. The Fusion Ingredient filter lets you type any persona's name and see every persona you can fuse it into.
 
-**Planning fusions.** Tap any persona to see every recipe that produces it. The Fusion Tree goes further: pick a target and it maps out the entire ingredient chain, layer by layer, all the way down to personas you already own. At every step you can swap to a different recipe if an alternative suits you better. A depth slider controls how many layers deep it goes.
+**Planning fusions.** Tap any persona to see every recipe that produces it. The Fusion Tree goes further: pick a target and it maps out the entire ingredient chain, all the way down to personas you already own. The whole chain opens by default and scales to fit the screen; at every step you can swap to a different recipe if an alternative suits you better. Prefer to drill down a layer at a time instead? Turn off auto-expand in Settings and each node opens on click.
 
 **Tracking your collection.** Mark personas as owned or wishlisted. The fusion tree stops expanding at anything you already have, so you only see what's left to fuse. Wishlisted personas get a gold star and can be filtered to a separate view.
 
@@ -18,7 +18,7 @@ The P5R Fusion Planner is a browser tool for Persona 5 Royal. It covers every pe
 
 ---
 
-## How the fusion calculator works
+## How fusion works
 
 Persona fusion in P5R combines two personas to produce a third. The rules (simplified):
 
@@ -92,5 +92,5 @@ For the full picture of what the app reads and what it does with it, see the [Pr
 
 ---
 
-Web app: https://aemiliusxiv.github.io/P5RFusionCalc/
-Source code: https://github.com/AemiliusXIV/P5RFusionCalc
+Web app: https://aemiliusxiv.github.io/P5R-Fusion-Planner/
+Source code: https://github.com/AemiliusXIV/P5R-Fusion-Planner

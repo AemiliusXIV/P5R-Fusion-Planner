@@ -168,10 +168,10 @@
         <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,16,0,0">
             <TextBlock Text="P5R Fusion Planner Companion · " Foreground="#555" FontSize="10"/>
             <TextBlock Foreground="#555" FontSize="10">
-                <Hyperlink NavigateUri="https://github.com/AemiliusXIV/P5RFusionCalc"
+                <Hyperlink NavigateUri="https://github.com/AemiliusXIV/P5R-Fusion-Planner"
                            RequestNavigate="Hyperlink_RequestNavigate"
                            Foreground="{StaticResource P5Gray}">
-                    github.com/AemiliusXIV/P5RFusionCalc
+                    github.com/AemiliusXIV/P5R-Fusion-Planner
                 </Hyperlink>
             </TextBlock>
         </StackPanel>
