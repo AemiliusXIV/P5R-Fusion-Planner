@@ -9,6 +9,11 @@ The companion (`companion/`) is a small Windows desktop utility that reads a
 Persona 5 Royal PC save file and imports the player's owned personas into
 the web-based fusion planner.
 
+Besides the persona compendium, it reads three values from the save header
+(calendar day, playtime, and protagonist level) only to display them on screen,
+so the user can confirm they selected the right save slot. These values are not
+included in the import and not written anywhere.
+
 ## What it does not do
 
 - **No process access.** The tool never calls `OpenProcess`, `ReadProcessMemory`,

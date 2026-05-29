@@ -38,6 +38,14 @@ jobs:
           $version = "${{ github.ref_name }}" -replace '^companion-v', ''
           Move-Item publish/P5RCompanion.exe "publish/P5RCompanion-$version.exe"
 
+      - name: Compute checksum
+        id: hash
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}" -replace '^companion-v', ''
+          $sha = (Get-FileHash "publish/P5RCompanion-$version.exe" -Algorithm SHA256).Hash.ToLower()
+          "sha256=$sha" >> $env:GITHUB_OUTPUT
+
       - name: Upload to release
         if: startsWith(github.ref, 'refs/tags/companion-v')
         uses: softprops/action-gh-release@v2
@@ -57,25 +65,24 @@ jobs:
             3. Pick a save slot, click **Read Selected Save**
             4. Click **Open in Browser** to import, or **Copy Link** to paste manually
 
-            For a full walkthrough, details on what data is read, and a privacy breakdown,
+            For a full walkthrough, what data is read, a privacy breakdown, and security notes,
             see the [How it works](https://github.com/AemiliusXIV/P5R-Fusion-Planner/blob/master/docs/how-it-works.md) guide.
 
-            ---
-
-            **Security warnings on first launch**
-
-            Windows or your antivirus may flag this on first run. It happens because the app
-            isn't signed with a publisher certificate, and because it reads files from disk,
-            not because anything is wrong. The app only reads your P5R save file locally and
-            sends nothing over the network. See the guide above for the full breakdown.
-
-            To get past the SmartScreen prompt: **More info → Run anyway**.
+            On first run, Windows SmartScreen or your antivirus may prompt because the app isn't
+            signed. It reads your save locally and makes no network connections; the guide above
+            covers the detail. To proceed past SmartScreen: **More info → Run anyway**.
 
             ---
 
             **What's new**
 
-            - Fixed an issue where the app would silently fail to open after downloading.
+            - Updated all in-app links to the project's new address.
+            - Footer now links to the app's official source so you can confirm where your build came from.
+            - Added a SHA-256 checksum to each release so you can verify your download.
+
+            ---
+
+            Verify your download (optional). SHA-256: `${{ steps.hash.outputs.sha256 }}`
 
       - name: Upload as artifact (manual runs)
         if: github.event_name == 'workflow_dispatch'

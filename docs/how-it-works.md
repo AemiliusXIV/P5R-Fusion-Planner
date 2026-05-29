@@ -53,11 +53,14 @@ Your wishlist entries and notes are never overwritten by an import from the save
 
 ### What it reads
 
-The companion reads only the **persona compendium** section of your save file. This is the list of which personas you currently have registered in the Velvet Room compendium. It contains nothing else.
+Two parts of your save:
 
-Specifically, it does **not** read:
+- The **persona compendium**: the list of personas you have registered in the Velvet Room. This becomes your owned list. It doesn't read those personas' stats, skills, or traits, only which ones you have.
+- Three values from the save header (your **calendar day, playtime, and level**), shown on screen so you can confirm you picked the right save slot. These are displayed only: not added to the import, not saved, not sent anywhere.
+
+It does **not** read:
 - Your protagonist's name
-- Your playtime, in-game money, or items
+- Your in-game money or items
 - Your story progress or which scenes you've seen
 - Confidant ranks or relationship data
 - Any character dialogue or choices
@@ -87,6 +90,12 @@ SmartScreen checks whether a downloaded executable is signed with a publisher ce
 
 **Antivirus flags**
 Some antivirus tools flag self-contained .NET executables because they're large bundled files (the app ships with its own copy of the .NET runtime included) and because the app reads files from disk. Both are normal and expected for this type of application. If you want to verify the file yourself, the full source code is in this repo.
+
+**Download only from the official source**
+Get the companion only from the [official releases page](https://github.com/AemiliusXIV/P5R-Fusion-Planner/releases). The app makes no network connections, so it cannot send your data anywhere; a copy obtained from somewhere else could be altered to do exactly that. Every release lists a SHA-256 checksum, so you can confirm the file you downloaded matches the published build before running it.
+
+**What the checksum is for**
+A SHA-256 checksum is a short fingerprint of the exact file that was built and published. After downloading, you can generate the same fingerprint from your own copy and compare the two: if they match, your file is identical to the published build and hasn't been tampered with on the way to you. On Windows, run `Get-FileHash .\P5RCompanion-1.0.2.exe` in PowerShell and check the result against the value in the release notes. It's optional, just there if you want the extra certainty.
 
 For the full picture of what the app reads and what it does with it, see the [Privacy](#privacy) section above.
 

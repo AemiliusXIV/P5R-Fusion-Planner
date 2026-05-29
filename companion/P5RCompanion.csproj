@@ -8,7 +8,7 @@
     <UseWPF>true</UseWPF>
     <AssemblyTitle>P5R Fusion Planner: Save Reader</AssemblyTitle>
     <Product>P5R Companion</Product>
-    <Version>1.0.0</Version>
+    <Version>1.0.2</Version>
     <Copyright>Copyright (c) AemiliusXIV</Copyright>
   </PropertyGroup>
 
