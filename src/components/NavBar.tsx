@@ -3,10 +3,11 @@
 import { NavLink } from 'react-router-dom';
 
 const links = [
-  { to: '/list',     label: 'Personas'  },
-  { to: '/skills',   label: 'Skills'    },
-  { to: '/strength', label: 'Strength'  },
-  { to: '/settings', label: 'Settings'  },
+  { to: '/list',      label: 'Personas'  },
+  { to: '/skills',    label: 'Skills'    },
+  { to: '/ultimates', label: 'Ultimates' },
+  { to: '/strength',  label: 'Strength'  },
+  { to: '/settings',  label: 'Settings'  },
 ];
 
 export function NavBar() {

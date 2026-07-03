@@ -6,11 +6,12 @@ A Persona 5 Royal fusion calculator and collection planner built as a modern PWA
 
 ## Features
 
-- **Full fusion calculator**: all 464 Royal personas, binary fusion, same-arcana downrank, rare (Treasure Demon) fusions, and all 24 special multi-ingredient fusions
+- **Full fusion calculator**: all 232 Royal personas, binary fusion, same-arcana downrank, rare (Treasure Demon) fusions, and all 24 special multi-ingredient fusions
 - **Recursive Fusion Tree**: pick any target persona and see a full ingredient chain down to personas you already own, with swappable recipe alternatives at every node
 - **Owned & Wishlist tracking**: mark personas as owned or wishlisted; the fusion tree stops branching at anything you already have
-- **Confidant awareness**: personas locked behind Social Link ranks are flagged in the fusion tree so you know what you need before you fuse
-- **Skill browser**: searchable list of all 925 skills with element, cost, and which personas learn them
+- **Confidant awareness**: each arcana's ultimate persona is gated behind maxing that Confidant; those are flagged across the app, and the fusion tree marks them locked or unlocked to match your progress
+- **Ultimates view**: the 23 arcana ultimates in one place, with the ones you can fuse now sorted to the top and any you already have dropped to the bottom
+- **Skill browser**: searchable list of all 525 skills with element, cost, and which personas learn them
 - **DLC toggles**: enable or disable each DLC persona group; the entire fusion engine updates accordingly
 - **Import / Export**: save your collection as JSON and reload it across devices
 - **PWA**: installable on Android and desktop, works fully offline

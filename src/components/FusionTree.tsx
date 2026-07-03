@@ -25,7 +25,9 @@ export function NodeCard({ node, onSwapRecipe, onMarkDone, sessionOwned, isRoot,
   const childB = node.children?.[1];
   const ingAOwned = !!(childA && (childA.owned || sessionOwned.has(childA.persona) || !!ownedMap[childA.persona]?.owned));
   const ingBOwned = !!(childB && (childB.owned || sessionOwned.has(childB.persona) || !!ownedMap[childB.persona]?.owned));
-  const readyToFuse = !isOwnedNow && !!node.children && ingAOwned && ingBOwned;
+  // A confidant-gated node isn't "ready" even with both ingredients in hand,
+  // since it can't be fused until that Confidant is maxed.
+  const readyToFuse = !isOwnedNow && !node.locked && !!node.children && ingAOwned && ingBOwned;
 
   const statusClass = isOwnedNow
     ? 'border-l-4 border-green-500 bg-green-950/30'

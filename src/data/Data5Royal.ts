@@ -366,15 +366,33 @@ export const dlcPersona: string[][] = [
   ["Raoul"],
 ];
 
+// Each arcana has exactly one "ultimate" persona that can only be fused once
+// that arcana's Confidant is at max rank (10). Keyed by persona name. The
+// arcana strings match confidantNames below and the persona arcana values.
 export const confidantRequirements: Record<string, { arcana: string; rank: number }> = {
-  "Ardha":                   { arcana: "Temperance", rank: 10 },
-  "Raoul":                   { arcana: "Fool",       rank: 10 },
-  "Izanagi-no-Okami":        { arcana: "Fool",       rank: 10 },
-  "Izanagi-no-Okami Picaro": { arcana: "Fool",       rank: 10 },
-  "Satanael":                { arcana: "Fool",       rank: 10 },
-  "Alice":                   { arcana: "Death",      rank: 1  },
-  "Bugs":                    { arcana: "Councillor", rank: 9  },
-  "Sraosha":                 { arcana: "Faith",      rank: 8  },
+  "Vishnu":        { arcana: "Fool",       rank: 10 },
+  "Futsunushi":    { arcana: "Magician",   rank: 10 },
+  "Cybele":        { arcana: "Priestess",  rank: 10 },
+  "Mother Harlot": { arcana: "Empress",    rank: 10 },
+  "Odin":          { arcana: "Emperor",    rank: 10 },
+  "Kohryu":        { arcana: "Hierophant", rank: 10 },
+  "Ishtar":        { arcana: "Lovers",     rank: 10 },
+  "Chi You":       { arcana: "Chariot",    rank: 10 },
+  "Metatron":      { arcana: "Justice",    rank: 10 },
+  "Ongyo-Ki":      { arcana: "Hermit",     rank: 10 },
+  "Lakshmi":       { arcana: "Fortune",    rank: 10 },
+  "Zaou-Gongen":   { arcana: "Strength",   rank: 10 },
+  "Attis":         { arcana: "Hanged",     rank: 10 },
+  "Alice":         { arcana: "Death",      rank: 10 },
+  "Ardha":         { arcana: "Temperance", rank: 10 },
+  "Beelzebub":     { arcana: "Devil",      rank: 10 },
+  "Mada":          { arcana: "Tower",      rank: 10 },
+  "Lucifer":       { arcana: "Star",       rank: 10 },
+  "Sandalphon":    { arcana: "Moon",       rank: 10 },
+  "Asura":         { arcana: "Sun",        rank: 10 },
+  "Satan":         { arcana: "Judgement",  rank: 10 },
+  "Vohu Manah":    { arcana: "Councillor", rank: 10 },
+  "Maria":         { arcana: "Faith",      rank: 10 },
 };
 
 export const confidantNames: Record<string, string> = {

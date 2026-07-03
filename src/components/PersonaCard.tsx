@@ -5,6 +5,7 @@ import type { PersonaRuntime } from '../engine/initData';
 import { useStore } from '../store/useStore';
 import { ArcanaIcon } from './ArcanaIcon';
 import { ResistanceBadge } from './ResistanceBadge';
+import { ConfidantBadge } from './ConfidantBadge';
 
 interface Props {
   persona: PersonaRuntime;
@@ -72,6 +73,9 @@ export function PersonaCard({ persona }: Props) {
 
       {/* Resistances */}
       <ResistanceBadge elems={persona.elems} compact />
+
+      {/* Confidant requirement (only shows on arcana ultimates) */}
+      <ConfidantBadge persona={persona.name} />
 
       {/* Actions */}
       <div className="flex gap-2 mt-1">

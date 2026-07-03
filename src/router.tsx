@@ -10,6 +10,7 @@ import { Layout } from './Layout';
 const PersonaDetail     = lazy(() => import('./pages/PersonaDetail').then(m => ({ default: m.PersonaDetail })));
 const SkillList         = lazy(() => import('./pages/SkillList').then(m => ({ default: m.SkillList })));
 const FusionPlan        = lazy(() => import('./pages/FusionPlan').then(m => ({ default: m.FusionPlan })));
+const Ultimates         = lazy(() => import('./pages/Ultimates').then(m => ({ default: m.Ultimates })));
 const Settings          = lazy(() => import('./pages/Settings').then(m => ({ default: m.Settings })));
 const Import            = lazy(() => import('./pages/Import').then(m => ({ default: m.Import })));
 const StrengthConfidant = lazy(() => import('./pages/StrengthConfidant').then(m => ({ default: m.StrengthConfidant })));
@@ -24,6 +25,7 @@ export const router = createHashRouter([
       { path: 'skills',           element: <SkillList />        },
       { path: 'persona/:name',    element: <PersonaDetail />    },
       { path: 'fusion-tree/:name',element: <FusionPlan />       },
+      { path: 'ultimates',        element: <Ultimates />        },
       { path: 'strength',         element: <StrengthConfidant />},
       { path: 'settings',         element: <Settings />         },
       { path: 'import',           element: <Import />           },

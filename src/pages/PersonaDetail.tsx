@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { useStore } from '../store/useStore';
 import { ArcanaIcon } from '../components/ArcanaIcon';
 import { ResistanceBadge } from '../components/ResistanceBadge';
+import { ConfidantBadge } from '../components/ConfidantBadge';
 import { skillMapRoyal } from '../engine/initData';
 import { getSkillCost, elemColor } from '../utils/skillUtils';
 
@@ -126,6 +127,11 @@ export function PersonaDetail() {
             DLC Persona
           </div>
         )}
+
+        {/* Confidant requirement (only shows on arcana ultimates) */}
+        <div className="mt-3 w-fit">
+          <ConfidantBadge persona={persona.name} size="md" />
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">

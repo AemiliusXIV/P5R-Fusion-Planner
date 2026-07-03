@@ -3,7 +3,7 @@
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { useStore } from '../store/useStore';
 import { PersonaCard } from '../components/PersonaCard';
-import { specialCombos } from '../data/Data5Royal';
+import { specialCombos, confidantRequirements } from '../data/Data5Royal';
 
 const ALL_ARCANA = [
   'Fool','Magician','Priestess','Empress','Emperor','Hierophant','Lovers','Chariot',
@@ -19,7 +19,7 @@ export function PersonaList() {
     arcanaFilter, setArcanaFilter,
     showOwnedOnly, setShowOwnedOnly,
     showWishlistOnly, setShowWishlistOnly,
-    ownedMap, displaySize,
+    ownedMap, displaySize, maxedConfidants,
     lastImportedAt, companionBannerDismissed, dismissCompanionBanner,
   } = useStore();
 
@@ -50,23 +50,30 @@ export function PersonaList() {
     const ownedNames = new Set(ownedList.map(p => p.name));
     const result = new Set<string>();
 
+    // A confidant-gated ultimate can't actually be fused until that Confidant
+    // is maxed, so it doesn't count as fuseable-now even with the ingredients.
+    const gateOpen = (name: string) => {
+      const req = confidantRequirements[name];
+      return !req || !!maxedConfidants[req.arcana];
+    };
+
     // Binary fusions: covers normal recipes and 2-ingredient special combos.
     for (let i = 0; i < ownedList.length; i++) {
       for (let j = i; j < ownedList.length; j++) {
         const fused = calculator.fuse(ownedList[i], ownedList[j]);
-        if (fused && !ownedNames.has(fused.name)) result.add(fused.name);
+        if (fused && !ownedNames.has(fused.name) && gateOpen(fused.name)) result.add(fused.name);
       }
     }
 
     // Multi-ingredient special combos (3+ sources).
     for (const combo of specialCombos) {
       if (combo.sources.length > 2 && combo.sources.every(s => ownedNames.has(s))) {
-        if (!ownedNames.has(combo.result)) result.add(combo.result);
+        if (!ownedNames.has(combo.result) && gateOpen(combo.result)) result.add(combo.result);
       }
     }
 
     return result;
-  }, [showFuseableOnly, personaList, calculator, ownedMap]);
+  }, [showFuseableOnly, personaList, calculator, ownedMap, maxedConfidants]);
 
   const filtered = useMemo(() => {
     let list = [...personaList];
