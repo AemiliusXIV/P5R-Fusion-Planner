@@ -56,22 +56,23 @@ Apache License, Version 2.0, Section 4(d).
 3. fiber-saveutil
    Copyright (c) zarroboogs
    https://github.com/zarroboogs/fiber-saveutil
-   LICENSE STATUS UNCONFIRMED -- see companion/KNOWN_ISSUES.md
-   The companion save reader's decryption logic is based on this project.
-   Permission to redistribute has been sought from the author; this notice will
-   be updated once a response is received. Do not distribute the companion/
-   subdirectory until this matter is resolved.
+   The upstream repository carries no license file. No source code from it is
+   included in this project. It is credited as the public documentation of the
+   P5R PC save format and static AES key, both facts of the game itself, which
+   the companion save reader implements in its own code. See
+   companion/RESOLVED.md for the full analysis.
 
 4. KingdomSaveEditor (KHSave.LibPersona5)
    Copyright (c) 2020 Luciano Ciccariello (Xeeynamo)
    https://github.com/Xeeynamo/KingdomSaveEditor
    Licensed under the GNU General Public License, Version 3.
-   LICENSE COMPATIBILITY UNDER REVIEW -- see companion/KNOWN_ISSUES.md
    The persona ID lookup table used by the companion save reader
-   (companion/Resources/persona-ids.txt) is adapted from this project.
-   The copyrightability of a factual enumeration table is disputed; this notice
-   will be updated once the matter is resolved. Do not distribute the companion/
-   subdirectory until this matter is resolved.
+   (companion/Resources/persona-ids.txt) is adapted from this project. To
+   comply with the GPL, the companion save reader (the companion/ directory, a
+   standalone program sharing no code with the web application) is licensed
+   under GPL v3; see companion/LICENSE and companion/RESOLVED.md. The web
+   application under the repository root remains Apache 2.0 and includes no
+   GPL material.
 
 ================================================================================
   SECTION B -- APACHE LICENSE, VERSION 2.0

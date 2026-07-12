@@ -7,10 +7,10 @@ namespace P5RCompanion;
 /// <summary>
 /// Decrypts a Persona 5 Royal PC save file.
 ///
-/// Algorithm ported from fiber-saveutil's save.py by zarroboogs:
-///   https://github.com/zarroboogs/fiber-saveutil
-///   License status: unconfirmed (no LICENSE file in upstream repo) --
-///   see companion/KNOWN_ISSUES.md
+/// The save format and static key are documented by zarroboogs's
+/// fiber-saveutil (https://github.com/zarroboogs/fiber-saveutil); this file
+/// is an independent C# implementation of that format. No code from it is
+/// included here. See companion/RESOLVED.md.
 ///
 /// File format (encrypted on disk):
 ///   0x00  "DATA" magic            4 bytes

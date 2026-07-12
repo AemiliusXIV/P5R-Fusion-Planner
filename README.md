@@ -36,14 +36,16 @@ chinhodado's calculator in turn credits:
 - https://github.com/Heimdall409/persona4-fusion-calculator
 - https://github.com/aqiu384/aqiu384.github.io/tree/master/p5-tool
 
-**[fiber-saveutil](https://github.com/zarroboogs/fiber-saveutil)** by zarroboogs — the companion's save file decryption logic is based on this project. It documents the P5R PC save format and the static AES key Atlus ships with every retail copy of the game.
+**[fiber-saveutil](https://github.com/zarroboogs/fiber-saveutil)** by zarroboogs — documents the P5R PC save format and the static AES key Atlus ships with every retail copy of the game. The companion's save reader implements that format in its own code.
 
-**[KingdomSaveEditor](https://github.com/Xeeynamo/KingdomSaveEditor)** by Xeeynamo — the persona ID lookup table used by the companion reader is adapted from KHSave.LibPersona5.
+**[KingdomSaveEditor](https://github.com/Xeeynamo/KingdomSaveEditor)** by Xeeynamo — the persona ID lookup table used by the companion reader is adapted from KHSave.LibPersona5 (GPL v3), which is why the companion itself is licensed under GPL v3.
 
 ## License
 
 The fusion engine and game data adapted from chinhodado/persona5_calculator are used under the **Apache License 2.0**. See [LICENSE](LICENSE) and [NOTICE](NOTICE) for full details and attribution.
 
 New code written for this project (UI components, Fusion Tree planner, Zustand store, PWA configuration) is also released under Apache 2.0.
+
+The companion save reader is a separate program and is licensed under the **GNU GPL v3**, because its persona ID table is adapted from the GPL-licensed KingdomSaveEditor. See [companion/LICENSE](companion/LICENSE) and [companion/RESOLVED.md](companion/RESOLVED.md) for the details.
 
 PERSONA 5 ROYAL is a trademark of Atlus Co., Ltd. SEGA is a registered trademark or trademark of SEGA Corporation. This project is an unofficial fan-made tool and is not affiliated with, endorsed by, or sponsored by Atlus Co., Ltd. or SEGA Corporation. All game content, characters, names, and related assets are the property of their respective owners. No commercial use is intended or made.

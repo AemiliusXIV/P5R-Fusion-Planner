@@ -18,15 +18,18 @@ https://github.com/chinhodado/persona5_calculator
 
 ================================================================================
 
-The companion/ subdirectory additionally incorporates material from:
+The companion/ subdirectory is a standalone program licensed under the GNU
+General Public License, Version 3 (see companion/LICENSE). It credits:
 
 fiber-saveutil
 Copyright (c) zarroboogs
 https://github.com/zarroboogs/fiber-saveutil
-License status: unconfirmed -- see companion/KNOWN_ISSUES.md
+Credited as the public documentation of the P5R PC save format; no source
+code from it is included. See companion/RESOLVED.md.
 
 KingdomSaveEditor (KHSave.LibPersona5)
 Copyright (c) 2020 Luciano Ciccariello (Xeeynamo)
 https://github.com/Xeeynamo/KingdomSaveEditor
 License: GNU General Public License, Version 3
-License compatibility: under review -- see companion/KNOWN_ISSUES.md
+The companion's persona ID lookup table is adapted from this project, which
+is why the companion itself is GPL v3. See companion/RESOLVED.md.

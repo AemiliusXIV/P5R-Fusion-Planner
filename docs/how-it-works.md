@@ -77,7 +77,7 @@ It does **not** read:
 
 **No analytics or tracking.** Neither the web app nor the companion makes any background requests. There are no analytics, no telemetry, no crash reports.
 
-**The decryption key is not a personal credential.** P5R PC save files are encrypted with a static AES-256 key that Atlus ships identically in every retail copy of the game. It is not tied to your account or your Steam ID. This key is documented publicly in the open-source [fiber-saveutil](https://github.com/zarroboogs/fiber-saveutil) project, which this companion's decryption logic is ported from.
+**The decryption key is not a personal credential.** P5R PC save files are encrypted with a static AES-256 key that Atlus ships identically in every retail copy of the game. It is not tied to your account or your Steam ID. This key is documented publicly in the [fiber-saveutil](https://github.com/zarroboogs/fiber-saveutil) project; the companion implements the same save format in its own C# code.
 
 ---
 
