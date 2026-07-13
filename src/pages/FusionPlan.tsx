@@ -28,35 +28,32 @@ function updateNodeAtPath(
     if (idx === segs.length - 1) return updater(node);
     if (!node.children) return node;
     const nextName = segs[idx + 1];
-    const ci = node.children[0].persona === nextName ? 0
-      : node.children[1].persona === nextName ? 1 : -1;
+    const ci = node.children.findIndex(c => c.persona === nextName);
     if (ci === -1) return node;
     const newChild = rec(node.children[ci], idx + 1);
-    const children: [FusionNode, FusionNode] = ci === 0
-      ? [newChild, node.children[1]]
-      : [node.children[0], newChild];
+    const children = node.children.map((c, i) => (i === ci ? newChild : c));
     return { ...node, children };
   };
   return rec(root, 0);
 }
 
-// Swap a node's recipe and rebuild its subtree from the two new ingredients.
+// Swap a node's recipe and rebuild its subtree from the new ingredients.
 function rebuildWithRecipe(
   node: FusionNode,
-  recipe: [string, string],
+  recipe: string[],
   remaining: number,
   calculator: FusionCalculator,
   ownedMap: OwnedMap,
   maxedConfidants: Record<string, boolean>
 ): FusionNode {
-  const a = calculator.getRecipesDeep(recipe[0], remaining, ownedMap, maxedConfidants);
-  const b = calculator.getRecipesDeep(recipe[1], remaining, ownedMap, maxedConfidants);
   return {
     ...node,
     recipe,
-    children: [a, b],
+    children: recipe.map(name =>
+      calculator.getRecipesDeep(name, remaining, ownedMap, maxedConfidants)
+    ),
     alternatives: node.alternatives
-      .filter(x => !(x[0] === recipe[0] && x[1] === recipe[1]))
+      .filter(x => x.join('+') !== recipe.join('+'))
       .concat(node.recipe ? [node.recipe] : []),
   };
 }
@@ -70,16 +67,15 @@ function depthOfPath(path: string): number {
 function walkTree(node: FusionNode, sessionOwned: Set<string>): { fusions: number; bases: string[] } {
   if (node.owned || sessionOwned.has(node.persona)) return { fusions: 0, bases: [] };
   if (!node.children) return { fusions: 0, bases: [node.persona] };
-  const left = walkTree(node.children[0], sessionOwned);
-  const right = walkTree(node.children[1], sessionOwned);
+  const sub = node.children.map(c => walkTree(c, sessionOwned));
   return {
-    fusions: 1 + left.fusions + right.fusions,
-    bases: [...left.bases, ...right.bases],
+    fusions: 1 + sub.reduce((sum, s) => sum + s.fusions, 0),
+    bases: sub.flatMap(s => s.bases),
   };
 }
 
 interface SharedState {
-  swaps: Record<string, [string, string]>;
+  swaps: Record<string, string[]>;
   expanded: string[];
 }
 
@@ -143,7 +139,7 @@ export function FusionPlan() {
   // shared chain re-applies even after the user clicks Refresh.
   const [initialShared, setInitialShared] = useState<SharedState | null>(null);
   // New swaps and expansions made this session (reset on Refresh).
-  const [swapMap, setSwapMap] = useState<Record<string, [string, string]>>({});
+  const [swapMap, setSwapMap] = useState<Record<string, string[]>>({});
   const [expandedPaths, setExpandedPaths] = useState<Set<string>>(new Set());
   const [showShareModal, setShowShareModal] = useState(false);
 
@@ -193,7 +189,7 @@ export function FusionPlan() {
     setOwned(personaName, { owned: true });
   }, [setOwned]);
 
-  const handleRecipeSwap = useCallback((swapPath: string, recipe: [string, string]) => {
+  const handleRecipeSwap = useCallback((swapPath: string, recipe: string[]) => {
     setSwapMap(prev => ({ ...prev, [swapPath]: recipe }));
   }, []);
 
@@ -203,7 +199,7 @@ export function FusionPlan() {
 
   // Auto-expand mode keeps the whole tree in one place (rootNode) rather than
   // in per-node component state, so swaps update it here by path.
-  const handleSwapAuto = useCallback((swapPath: string, recipe: [string, string]) => {
+  const handleSwapAuto = useCallback((swapPath: string, recipe: string[]) => {
     const remaining = Math.max(1, AUTO_DEPTH - depthOfPath(swapPath));
     setRootNode(prev => prev
       ? updateNodeAtPath(prev, swapPath, n =>

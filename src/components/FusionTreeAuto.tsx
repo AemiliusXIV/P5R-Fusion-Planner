@@ -6,7 +6,7 @@ import { useStore } from '../store/useStore';
 import { NodeCard } from './FusionTree';
 
 // Fixed-slot tidy-tree layout. Each leaf gets its own horizontal slot;
-// every parent sits at the exact midpoint of its two children's cards. This
+// every parent sits at the exact midpoint of its children's cards. This
 // keeps the branching look while removing the drift the flex layout produced
 // when one child had a deep subtree and its sibling was a lone leaf.
 //
@@ -59,11 +59,12 @@ function buildLayout(
       return me;
     }
 
-    const c0 = visit(kids[0], `${path}/${kids[0].persona}`, depth + 1);
-    const c1 = visit(kids[1], `${path}/${kids[1].persona}`, depth + 1);
-    const me: Placed = { node, path, depth, x: (c0.x + c1.x) / 2, isLeaf: false };
+    const placedKids = kids.map(k => visit(k, `${path}/${k.persona}`, depth + 1));
+    const first = placedKids[0];
+    const last = placedKids[placedKids.length - 1];
+    const me: Placed = { node, path, depth, x: (first.x + last.x) / 2, isLeaf: false };
     placed.push(me);
-    edges.push({ from: me, to: c0 }, { from: me, to: c1 });
+    for (const c of placedKids) edges.push({ from: me, to: c });
     return me;
   };
 
@@ -82,7 +83,7 @@ interface Props {
   rootPath: string;
   sessionOwned: Set<string>;
   onMarkDone: (name: string) => void;
-  onSwap: (path: string, recipe: [string, string]) => void;
+  onSwap: (path: string, recipe: string[]) => void;
   requiredSkill?: string;
   skillSources?: Set<string>;
 }

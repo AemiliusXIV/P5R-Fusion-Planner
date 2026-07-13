@@ -273,13 +273,12 @@ export class FusionCalculator {
       };
     }
 
-    // Prefer recipes where both ingredients are already owned, then one, then neither.
-    // Within each tier, break ties by cost.
+    // Prefer recipes where every ingredient is already owned, then at least
+    // one, then none. Within each tier, break ties by cost.
     const ownedScore = (r: Recipe) => {
-      const aOwned = !!ownedMap[r.sources[0]?.name]?.owned;
-      const bOwned = !!ownedMap[r.sources[1]?.name]?.owned;
-      if (aOwned && bOwned) return 0;
-      if (aOwned || bOwned) return 1;
+      const ownedCount = r.sources.filter(s => !!ownedMap[s.name]?.owned).length;
+      if (ownedCount === r.sources.length) return 0;
+      if (ownedCount > 0) return 1;
       return 2;
     };
     const sorted = [...recipes].sort((a, b) => {
@@ -288,19 +287,17 @@ export class FusionCalculator {
     });
 
     const best = sorted[0];
-    const [a, b] = best.sources as [PersonaRuntime, PersonaRuntime];
 
-    const alternatives = sorted.slice(1).map(r => [r.sources[0].name, r.sources[1].name] as [string, string]);
+    const alternatives = sorted.slice(1).map(r => r.sources.map(s => s.name));
 
     const node: FusionNode = {
       persona: targetName, level, arcana, owned: false, locked,
       confidant,
-      recipe: [a.name, b.name],
+      recipe: best.sources.map(s => s.name),
       alternatives,
-      children: [
-        this.getRecipesDeep(a.name, depthRemaining - 1, ownedMap, maxedConfidants),
-        this.getRecipesDeep(b.name, depthRemaining - 1, ownedMap, maxedConfidants),
-      ],
+      children: best.sources.map(s =>
+        this.getRecipesDeep(s.name, depthRemaining - 1, ownedMap, maxedConfidants)
+      ),
       cost: best.cost,
     };
 

@@ -82,9 +82,11 @@ export interface FusionNode {
   owned: boolean;
   locked: boolean;
   confidant?: { arcana: string; rank: number };
-  recipe: [string, string] | null;
-  alternatives: [string, string][];
-  children: [FusionNode, FusionNode] | null;
+  // Ingredient persona names. Normal fusions have two; special fusions can
+  // have up to six. children[i] is the subtree for recipe[i].
+  recipe: string[] | null;
+  alternatives: string[][];
+  children: FusionNode[] | null;
   cost: number;
 }
 

@@ -8,7 +8,7 @@ import { ArcanaIcon } from './ArcanaIcon';
 
 interface NodeCardProps {
   node: FusionNode;
-  onSwapRecipe: (recipe: [string, string]) => void;
+  onSwapRecipe: (recipe: string[]) => void;
   onMarkDone: (name: string) => void;
   sessionOwned: Set<string>;
   isRoot?: boolean;
@@ -21,13 +21,11 @@ export function NodeCard({ node, onSwapRecipe, onMarkDone, sessionOwned, isRoot,
   const isOwnedNow = node.owned || sessionOwned.has(node.persona) || !!ownedMap[node.persona]?.owned;
   const wishlist = !isOwnedNow && !!ownedMap[node.persona]?.wishlist;
 
-  const childA = node.children?.[0];
-  const childB = node.children?.[1];
-  const ingAOwned = !!(childA && (childA.owned || sessionOwned.has(childA.persona) || !!ownedMap[childA.persona]?.owned));
-  const ingBOwned = !!(childB && (childB.owned || sessionOwned.has(childB.persona) || !!ownedMap[childB.persona]?.owned));
-  // A confidant-gated node isn't "ready" even with both ingredients in hand,
+  const allIngredientsOwned = !!node.children && node.children.length > 0 &&
+    node.children.every(c => c.owned || sessionOwned.has(c.persona) || !!ownedMap[c.persona]?.owned);
+  // A confidant-gated node isn't "ready" even with every ingredient in hand,
   // since it can't be fused until that Confidant is maxed.
-  const readyToFuse = !isOwnedNow && !node.locked && !!node.children && ingAOwned && ingBOwned;
+  const readyToFuse = !isOwnedNow && !node.locked && allIngredientsOwned;
 
   const statusClass = isOwnedNow
     ? 'border-l-4 border-green-500 bg-green-950/30'
@@ -38,11 +36,10 @@ export function NodeCard({ node, onSwapRecipe, onMarkDone, sessionOwned, isRoot,
     : 'border-l-4 border-p5red bg-p5card';
 
   const sortedAlts = [...node.alternatives].sort((a, b) => {
-    const score = (pair: [string, string]) => {
-      const p0 = !!ownedMap[pair[0]]?.owned || sessionOwned.has(pair[0]);
-      const p1 = !!ownedMap[pair[1]]?.owned || sessionOwned.has(pair[1]);
-      if (p0 && p1) return 0;
-      if (p0 || p1) return 1;
+    const score = (names: string[]) => {
+      const ownedCount = names.filter(n => !!ownedMap[n]?.owned || sessionOwned.has(n)).length;
+      if (ownedCount === names.length) return 0;
+      if (ownedCount > 0) return 1;
       return 2;
     };
     return score(a) - score(b);
@@ -108,11 +105,11 @@ export function NodeCard({ node, onSwapRecipe, onMarkDone, sessionOwned, isRoot,
             }}
           >
             <option value={node.recipe.join('+')}>
-              {node.recipe[0]} + {node.recipe[1]}
+              {node.recipe.join(' + ')}
             </option>
             {sortedAlts.slice(0, 9).map((alt, i) => (
               <option key={i} value={alt.join('+')}>
-                {alt[0]} + {alt[1]}
+                {alt.join(' + ')}
               </option>
             ))}
           </select>
@@ -133,9 +130,9 @@ interface FusionTreeProps {
   // map key for swap state so the same persona at two separate branches is
   // tracked independently.
   path: string;
-  onRecipeSwap?: (path: string, recipe: [string, string]) => void;
+  onRecipeSwap?: (path: string, recipe: string[]) => void;
   onExpand?: (path: string) => void;
-  initialSwaps?: Record<string, [string, string]>;
+  initialSwaps?: Record<string, string[]>;
   initialExpanded?: Set<string>;
 }
 
@@ -156,18 +153,17 @@ export function FusionTree({
 
   // reportUp=true for user interactions; false when restoring from a shared URL
   // so the already-encoded state isn't double-counted in the share map.
-  const handleSwap = useCallback((recipe: [string, string], reportUp = true) => {
-    if (!personaMap[recipe[0]] || !personaMap[recipe[1]]) return;
-    const newChildren: [FusionNode, FusionNode] = [
-      calculator.getRecipesDeep(recipe[0], 1, ownedMap, maxedConfidants),
-      calculator.getRecipesDeep(recipe[1], 1, ownedMap, maxedConfidants),
-    ];
+  const handleSwap = useCallback((recipe: string[], reportUp = true) => {
+    if (!recipe.every(name => personaMap[name])) return;
+    const newChildren: FusionNode[] = recipe.map(name =>
+      calculator.getRecipesDeep(name, 1, ownedMap, maxedConfidants)
+    );
     setCurrentNode(prev => ({
       ...prev,
       recipe,
       children: newChildren,
       alternatives: prev.alternatives
-        .filter(a => !(a[0] === recipe[0] && a[1] === recipe[1]))
+        .filter(a => a.join('+') !== recipe.join('+'))
         .concat([prev.recipe!]),
     }));
     setExpanded(true);
@@ -225,9 +221,6 @@ export function FusionTree({
   // where each layer is revealed on demand.
   const showToggle = !isRoot && !isOwnedNow && !noRecipe && !fusionTreeAutoExpand;
 
-  const childPath0 = currentNode.children ? `${path}/${currentNode.children[0].persona}` : '';
-  const childPath1 = currentNode.children ? `${path}/${currentNode.children[1].persona}` : '';
-
   return (
     <div className="flex flex-col items-center">
       <NodeCard
@@ -254,34 +247,22 @@ export function FusionTree({
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-4 bg-p5border" />
           <div className="flex gap-4 mt-4 relative">
             <div className="absolute top-0 left-0 right-0 h-px bg-p5border" />
-            <div className="flex flex-col items-center pt-4">
-              <FusionTree
-                node={currentNode.children[0]}
-                sessionOwned={sessionOwned}
-                onMarkDone={onMarkDone}
-                requiredSkill={requiredSkill}
-                skillSources={skillSources}
-                path={childPath0}
-                onRecipeSwap={onRecipeSwap}
-                onExpand={onExpand}
-                initialSwaps={initialSwaps}
-                initialExpanded={initialExpanded}
-              />
-            </div>
-            <div className="flex flex-col items-center pt-4">
-              <FusionTree
-                node={currentNode.children[1]}
-                sessionOwned={sessionOwned}
-                onMarkDone={onMarkDone}
-                requiredSkill={requiredSkill}
-                skillSources={skillSources}
-                path={childPath1}
-                onRecipeSwap={onRecipeSwap}
-                onExpand={onExpand}
-                initialSwaps={initialSwaps}
-                initialExpanded={initialExpanded}
-              />
-            </div>
+            {currentNode.children.map((child, i) => (
+              <div key={`${i}-${child.persona}`} className="flex flex-col items-center pt-4">
+                <FusionTree
+                  node={child}
+                  sessionOwned={sessionOwned}
+                  onMarkDone={onMarkDone}
+                  requiredSkill={requiredSkill}
+                  skillSources={skillSources}
+                  path={`${path}/${child.persona}`}
+                  onRecipeSwap={onRecipeSwap}
+                  onExpand={onExpand}
+                  initialSwaps={initialSwaps}
+                  initialExpanded={initialExpanded}
+                />
+              </div>
+            ))}
           </div>
         </div>
       )}
