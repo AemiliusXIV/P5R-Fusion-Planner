@@ -6,7 +6,7 @@ namespace P5RCompanion;
 /// Auto-detects the P5R save folder location.
 ///
 /// Standard path:
-///   %AppData%\Roaming\SEGA\P5R\Steam\<SteamID64>\savedata\
+///   %AppData%\SEGA\P5R\Steam\<SteamID64>\savedata\
 ///
 /// The SteamID64 subfolder is the only one whose name we don't know in advance.
 /// We scan for it and prefer the most recently modified one (handles users with

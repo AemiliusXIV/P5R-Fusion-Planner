@@ -74,11 +74,9 @@ jobs:
 
             ---
 
-            **What's new**
+            **What's new:** see the [commit history](https://github.com/AemiliusXIV/P5R-Fusion-Planner/commits/${{ github.ref_name }}/companion) for the changes in this release.
 
-            - Updated all in-app links to the project's new address.
-            - Footer now links to the app's official source so you can confirm where your build came from.
-            - Added a SHA-256 checksum to each release so you can verify your download.
+            The companion is licensed under [GPL v3](https://github.com/AemiliusXIV/P5R-Fusion-Planner/blob/master/companion/LICENSE).
 
             ---
 

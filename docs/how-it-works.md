@@ -40,7 +40,7 @@ The companion (`P5RCompanion.exe`) is a small Windows app that reads your Person
 ### How to use it
 
 1. Open `P5RCompanion.exe`
-2. It finds your P5R save folder automatically. If it doesn't, click **Browse** and navigate to your save folder manually (usually inside `%AppData%\Roaming\SEGA\P5R\Steam\`)
+2. It finds your P5R save folder automatically. If it doesn't, click **Browse** and navigate to your save folder manually (usually inside `%AppData%\SEGA\P5R\Steam\`)
 3. Your save slots appear in the list. Click the one you want to read
 4. Click **Read Selected Save**
 5. You'll see how many owned personas were found, along with your save's day, playtime, and level
@@ -95,7 +95,7 @@ Some antivirus tools flag self-contained .NET executables because they're large 
 Get the companion only from the [official releases page](https://github.com/AemiliusXIV/P5R-Fusion-Planner/releases). The app makes no network connections, so it cannot send your data anywhere; a copy obtained from somewhere else could be altered to do exactly that. Every release lists a SHA-256 checksum, so you can confirm the file you downloaded matches the published build before running it.
 
 **What the checksum is for**
-A SHA-256 checksum is a short fingerprint of the exact file that was built and published. After downloading, you can generate the same fingerprint from your own copy and compare the two: if they match, your file is identical to the published build and hasn't been tampered with on the way to you. On Windows, run `Get-FileHash .\P5RCompanion-1.0.2.exe` in PowerShell and check the result against the value in the release notes. It's optional, just there if you want the extra certainty.
+A SHA-256 checksum is a short fingerprint of the exact file that was built and published. After downloading, you can generate the same fingerprint from your own copy and compare the two: if they match, your file is identical to the published build and hasn't been tampered with on the way to you. On Windows, run `Get-FileHash .\P5RCompanion-<version>.exe` in PowerShell and check the result against the value in the release notes. It's optional, just there if you want the extra certainty.
 
 For the full picture of what the app reads and what it does with it, see the [Privacy](#privacy) section above.
 

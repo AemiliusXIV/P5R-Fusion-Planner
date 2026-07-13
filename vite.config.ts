@@ -19,7 +19,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'icons/*.png'],
+      includeAssets: ['favicon.svg', 'icons/*.png'],
       manifest: {
         name: 'P5R Fusion Planner',
         short_name: 'P5R Fusion',
